@@ -44,7 +44,7 @@ const statsScraper = async () => {
                 squadra: team.name,
                 giocatore: player.name,
                 voto: voto === 55 ? null : voto,
-                fantavoto: fvoto === 55 ? null : voto,
+                fantavoto: fvoto === 55 ? null : fvoto,
                 id: `${gamesWeek}-${team.name}-${player.name}`,
         }})]
     }, [])
@@ -216,13 +216,12 @@ async function writeTitolarita(titolarita) {
 
 const main = async () => {
     const stats = await statsScraper()
-    // const quots = await quotsScraper()
-    // const titolarita = await titolaritaScraper()
+    const quots = await quotsScraper()
+    const titolarita = await titolaritaScraper()
     const resultS = await writeStats(stats)
-    // const resultT = await writeTitolarita(titolarita)
-    // const resultQ = await writeQuots(quots)
-    // console.log(resultS, resultT, resultQ)
-    console.log(resultS) 
+    const resultT = await writeTitolarita(titolarita)
+    const resultQ = await writeQuots(quots)
+    console.log(resultS, resultT, resultQ)
 }
 
 main()
