@@ -1,7 +1,7 @@
 const u = require('./utils')
 
 const statsScraper = async () => {
-    const URL = 'https://www.fantacalcio.it/voti-fantacalcio-serie-a';
+    const URL = 'https://www.fantacalcio.it/voti-fantacalcio-serie-a/';
     console.log('StatsScraper - Opening the browser...')
     const browser = await u.puppeteer.launch()
     const page = await browser.newPage()

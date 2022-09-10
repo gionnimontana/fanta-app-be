@@ -1,0 +1,22 @@
+module.exports = {
+    "Atalanta": "Musso, Toloi, Demiral, Okoli$, $Scalvini, Hateboer$, $Soppy, de Roon, Koopmeiners, Zappacosta, Pasalic$, $Ederson, Muriel$, $Lookman$, $Malinovskyi, Zapata",
+    "Bologna": "Skorupski, Posch$, $Soumaoro, Medel, Lucumi', De Silvestri$, $Kasius, Schouten, Ferguson$, $Dominguez, Cambiaso$, $Lykogiannis, Soriano$, $Orsolini, Arnautovic, Zirkzee$, $Barrow",
+    "Cremonese": "Radu$, $Carnesecchi, Aiwu, Chiriches$, $Hendry, Lochoshvili$, $Vasquez, Ghiglione, Ascacibar, Pickel, Valeri, Zanimacchia, Okereke$, $Afena-Gyan, Dessers",
+    "Empoli": "Vicario, Stojanovic, Ismajli$, $De Winter, Luperto, Parisi, Henderson$, $Haas, Marin, Bandinelli, Bajrami$, $Baldanzi, Destro$, $Satriano, Lammers$, $Cambiaghi$, $Pjaca",
+    "Fiorentina": "Gollini$, $Terracciano, Dodo', Milenkovic, Igor, Biraghi, Bonaventura, Amrabat$, $Mandragora, Barak, Gonzalez, Jovic, Sottil$, $Ikoné",
+    "Inter": "Handanovic, Skriniar, de Vrij, Bastoni, Dumfries, Barella, Brozovic, Calhanoglu, Dimarco$, $Gosens, Lautaro, Lukaku",
+    "Juventus": "Szczesny, Cuadrado, Danilo$, $Bonucci, Bremer, Alex Sandro, Locatelli$, $Miretti, Paredes, Pogba, Di Maria, Vlahovic, Kostic$, $Chiesa",
+    "Lazio": "Provedel, Lazzari, Patric$, $Casale, Romagnoli, Marusic, Milinkovic, Cataldi$, $M. Antonio, Luis Alberto$, $Vecino, Felipe Anderson, Immobile, Zaccagni$, $Pedro",
+    "Lecce": "Falcone, Gendrey, Pongracic, Umtiti, Pezzella, Bistrovic, Hjulmand, Gonzalez$, $Helgason, Strefezza, Ceesay, Di Francesco$, $Banda",
+    "Milan": "Maignan, Calabria, Kalulu$, $Kjaer, Tomori, Theo, Tonali, Bennacer, Messias$, $Saelemaekers, De Ketelaere, Leao, Giroud$, $Origi",
+    "Monza": "Di Gregorio$, $Cragno, Marlon, Pablo Mar, Carlos Augusto, Birindelli, Rovella$, $Colpani, Sensi$, $F. Ranocchia, Pessina, Molina, Petagna, Caprari",
+    "Napoli": "Meret, Di Lorenzo, Rrahmani, Kim, Rui$, $Olivera, Anguissa$, $Ndombele, Lobotka, Lozano, Zielinski$, $Raspadori, Kvaratskhelia, Osimhen",
+    "Roma": "Rui Patricio, Mancini, Smalling, Ibanez, Karsdorp, Cristante$, $Matic, Pellegrini, Spinazzola$, $Zalewski, Dybala, Zaniolo, Abraham",
+    "Salernitana": "Sepe, Bronn, Daniliuc$, $Fazio, Lovato$, $Gyomber, Candreva, Maggiore, Coulibaly$, $Bohinen, Vilhena, Mazzocchi$, $Bradaric, Dia, Piatek$, $Bonazzoli",
+    "Sampdoria": "Audero, Bereszynski, A. Ferrari, Colley, Augello, Villar$, $Rincon, Leris$, $Gabbiadini, Winks, Sabiri, Djuricic, Caputo",
+    "Sassuolo": "Consigli, Toljan, Erlic, Ferrari, Kyriakopoulos$, $Rogerio, Frattesi, Maxime Lopez, Henrique$, $Thorstvedt, Berardi, Pinamonti, Traoré$, $Laurienté",
+    "Spezia": "Dragowski, Kiwior, Caldara, Nikolaou, Gyasi, Agudelo$, $Kovalenko, Ekdal$, $Bourabia, S. Bastoni, Reca, Verde, Nzola",
+    "Torino": "Milinkovic, Zima$, $Djidji, Schuurs, Rodriguez$, $Buongiorno, Singo, Lukic, Ricci, Vojvoda, Miranchuk$, $Vlasic, Radonjic, Sanabria",
+    "Udinese": "Silvestri, Becao, Nuytinck$, $Bijol, Perez$, $Masina, Ehizibue$, $Ebosele, Makengo, Walace$, $Lovric, Pereyra, Udogie, Deulofeu, Beto",
+    "Verona": "Montipo', Dawidowicz, Gunter$, $Cabal, Ceccherini$, $Hien, Faraoni, Tameze, Ilic, Hongla$, $Veloso$, $Hrustic, Lazovic, Henry, Verdi$, $Lasagna"
+}
