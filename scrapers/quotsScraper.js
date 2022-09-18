@@ -10,8 +10,7 @@ const quotsScraper = async () => {
     console.log(`QuotsScraper - Collecting the stats...`)
     await page.waitForSelector('.pills-table')
     const stats = await page.evaluate(() => {
-    return [...document.querySelectorAll('.pills-table > tbody > tr')]
-        .map((row) => {
+        return [...document.querySelectorAll('.pills-table > tbody > tr')].map((row) => {
             const td = {
                 ATA: 'Atalanta',
                 BOL: 'Bologna',
@@ -37,12 +36,19 @@ const quotsScraper = async () => {
             const teamSign = row.querySelector('.player-team').innerText.replace('\n                        ', '').replace('\n                    ', '')
             const squadra = td[teamSign] || teamSign
             const giocatore = row.querySelector('.player-name > a').innerText.replace('\n    \n    ', '')
+            const fvm = Number(row.querySelector('.player-classic-fvm').innerText)
             const quotazione = Number(row.querySelector('.player-classic-current-price').innerText)
+            const undiciideale = Number(row.getAttribute('data-filter-playeds'))
+            const ruolo = row.getAttribute('data-filter-role-classic')
+
             return {
                 giocatore,
                 squadra,
                 quotazione,
-                id: `${squadra}-${giocatore}`
+                fvm,
+                undiciideale,
+                id: `${squadra}-${giocatore}`,
+                ruolo
             };
         });
     });
@@ -62,7 +68,7 @@ async function writeQuots(quots) {
                 objects: ${unquoted},
                 on_conflict: {
                     constraint: fanta_stats_pkey,
-                    update_columns: [quotazione]
+                    update_columns: [quotazione, fvm, undiciideale, ruolo]
                 }
             ) {
                 affected_rows
