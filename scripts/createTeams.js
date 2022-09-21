@@ -94,16 +94,19 @@ const roleAuction = (role, squads, players) => {
     let remaningPlayers = players.filter(p => p.ruolo === roleMap[role]).sort((a, b) => a.fvm - b.fvm).reverse()
 
     for (let call = 0; call < callsNumber; call++) {
-        const round = Math.ceil(call / auctNumber)
+        const round = Math.floor(call / auctNumber)
         const auctionerIndex = call - (round * auctNumber)
-        const titolaritaTarget = call < (callsNumber / 3) ? 80 : call < (callsNumber / 2) ? 60 : null
+        const titolaritaTarget = call < (callsNumber / 3) ? 80 : call < (callsNumber / 2) ? 60 : 0
         const auctioner = auctionerOrder[auctionerIndex]
-
-
         const wishList = remaningPlayers.filter(p => p.undiciideale > titolaritaTarget)
         const purchase = wishList.length > 0 ? wishList[0] : remaningPlayers[0]
         const purchaseIndex = squadMap[auctioner]?.giocatori[role].findIndex(el => el === undefined)
-        squadMap[auctioner].giocatori[role][purchaseIndex] = purchase.id
+        if (purchaseIndex >= 0) {
+            const current = [...squadMap[auctioner].giocatori[role]]
+            current[purchaseIndex] = purchase.id
+            squadMap[auctioner].giocatori.portieri = current
+            remaningPlayers = remaningPlayers.filter(p => p.id !== purchase.id)
+        }
     }
 
     console.log('squadMap ====>', Object.values(squadMap).map(s => s.giocatori.portieri))
