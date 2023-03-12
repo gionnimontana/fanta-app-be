@@ -1,7 +1,8 @@
 const u = require('./utils')
+const aRC = require('../api/restCollection')
 
 const statsScraper = async () => {
-    const URL = 'https://www.fantacalcio.it/voti-fantacalcio-serie-a/';
+    const URL = 'https://www.fantacalcio.it/voti-fantacalcio-serie-a/2022-23/24';
     console.log('StatsScraper - Opening the browser...')
     const browser = await u.puppeteer.launch()
     const page = await browser.newPage()
@@ -37,45 +38,60 @@ const statsScraper = async () => {
         return [...acc, ...team.players.map(player => {
             const voto = Number(player.vote.replace(',', '.'))
             const fvoto = Number(player.fvote.replace(',', '.'))
+            const regex = /[0-9]/g;
             return {
-                giornata: gamesWeek,
+                giornata: Number(gamesWeek.match(regex).join('')),
                 squadra: team.name,
                 giocatore: player.name,
-                voto: voto === 55 ? null : voto,
-                fantavoto: fvoto === 55 ? null : fvoto,
-                id: `${gamesWeek}-${team.name}-${player.name}`,
+                vote: voto === 55 ? null : voto,
+                fvote: fvoto === 55 ? null : fvoto,
         }})]
     }, [])
     return output
 };
 
-async function writeStats(stats) {
-	const json = JSON.stringify(stats)
-	const unquoted = json.replace(/"([^"]+)":/g, '$1:')
-	const mutationString = `
-        mutation insert_fanta_stats {
-            insert_fanta_stats(
-                objects: ${unquoted},
-                on_conflict: {
-                    constraint: fanta_stats_pkey1,
-                    update_columns: [voto, fantavoto]
-                }
-            ) {
-                affected_rows
-            }
-        }
-    `
-    return await u.fetchGraphQL(mutationString, 'insert_fanta_stats', {})
+const turnsPlayerAndSquadIntoId = async (stats) => {
+    const players_stats = await aRC.getAllPlayers()
+    stats.forEach((s) => {
+        const player = players_stats.find(p => {
+            return p.giocatore === s.giocatore && p.squadra === s.squadra
+        })
+        s.player_id = player ? player.id : 'NOT FOUND'
+    })
+    return stats.filter(s => s.player_id !== 'NOT FOUND')
 }
 
 async function scrapeAndWrite () {
     const stats = await statsScraper()
-    const result = await writeStats(stats)
-    console.log(result)
+    console.log('stats', stats)
+    const cleanedStats = await turnsPlayerAndSquadIntoId(stats)
+    const result = await aRC.writeStats(cleanedStats)
+    console.log('scrapeAndWrite done - updated: ', result.length, ' records')
 }
 
 module.exports = {
     run: scrapeAndWrite,
     scrape: statsScraper,
-    write: writeStats
 }
+
+
+
+// const aQL = require('../api/graphQL')
+// async function writeStatsQL(stats) {
+// 	const json = JSON.stringify(stats)
+// 	const unquoted = json.replace(/"([^"]+)":/g, '$1:')
+// 	const mutationString = `
+//         mutation insert_fanta_stats {
+//             insert_fanta_stats(
+//                 objects: ${unquoted},
+//                 on_conflict: {
+//                     constraint: fanta_stats_pkey1,
+//                     update_columns: [voto, fantavoto]
+//                 }
+//             ) {
+//                 affected_rows
+//             }
+//         }
+//     `
+//     return await aQL.fetchGraphQL(mutationString, 'insert_fanta_stats', {})
+// }

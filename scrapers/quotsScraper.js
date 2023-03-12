@@ -1,4 +1,5 @@
 const u = require('./utils')
+const aRC = require('../api/restCollection')
 
 const quotsScraper = async () => {
     const URL = 'https://www.fantacalcio.it/quotazioni-fantacalcio';
@@ -33,21 +34,19 @@ const quotsScraper = async () => {
                 UDI: 'Udinese',
                 VER: 'Verona'
             }
-            const teamSign = row.querySelector('.player-team').innerText.replace('\n                        ', '').replace('\n                    ', '')
+            const teamSign = row.querySelector('.player-team').innerText.trim().replace('\n', '')
             const squadra = td[teamSign] || teamSign
-            const giocatore = row.querySelector('.player-name > a').innerText.replace('\n    \n    ', '')
+            const giocatore = row.querySelector('.player-name > a').innerText.trim().replace('\n', '')
             const fvm = Number(row.querySelector('.player-classic-fvm').innerText)
             const quotazione = Number(row.querySelector('.player-classic-current-price').innerText)
             const undiciideale = Number(row.getAttribute('data-filter-playeds'))
             const ruolo = row.getAttribute('data-filter-role-classic')
-
             return {
                 giocatore,
                 squadra,
                 quotazione,
                 fvm,
                 undiciideale,
-                id: `${squadra}-${giocatore}`,
                 ruolo
             };
         });
@@ -55,37 +54,39 @@ const quotsScraper = async () => {
     console.log('QuotsScraper - Closing the browser...')
     await page.close()
     await browser.close()
-    console.log('QuotsScraper - Scrape done!')
+    console.log('QuotsScraper - Scrape done, scraped ' + stats.length + ' players')
     return stats
 };
 
-async function writeQuots(quots) {
-	const json = JSON.stringify(quots)
-	const unquoted = json.replace(/"([^"]+)":/g, '$1:')
-	const mutationString = `
-        mutation insert_fanta_quots {
-            insert_fanta_quots(
-                objects: ${unquoted},
-                on_conflict: {
-                    constraint: fanta_stats_pkey,
-                    update_columns: [quotazione, fvm, undiciideale, ruolo]
-                }
-            ) {
-                affected_rows
-            }
-        }
-    `
-    return await u.fetchGraphQL(mutationString, 'insert_fanta_quots', {})
-}
-
 async function scrapeAndWrite () {
     const stats = await quotsScraper()
-    const result = await writeQuots(stats)
-    console.log(result)
+    console.log('QuotsScraper - Writing the stats...')
+    const result = await aRC.writePlayers(stats)
+    console.log('QuotsScraper - Write done, ' + result.length + ' players written')
 }
 
 module.exports = {
     run: scrapeAndWrite,
-    scrape: quotsScraper,
-    write: writeQuots
+    scrape: quotsScraper
 }
+
+
+// const aQL = require('../api/graphQL')
+// async function writeQuotsQL(quots) {
+// 	const json = JSON.stringify(quots)
+// 	const unquoted = json.replace(/"([^"]+)":/g, '$1:')
+// 	const mutationString = `
+//         mutation insert_fanta_quots {
+//             insert_fanta_quots(
+//                 objects: ${unquoted},
+//                 on_conflict: {
+//                     constraint: fanta_stats_pkey,
+//                     update_columns: [quotazione, fvm, undiciideale, ruolo]
+//                 }
+//             ) {
+//                 affected_rows
+//             }
+//         }
+//     `
+//     return await aQL.fetchGraphQL(mutationString, 'insert_fanta_quots', {})
+// }
