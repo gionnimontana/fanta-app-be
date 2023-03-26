@@ -1,13 +1,6 @@
 const mockSquads = require('../mock/squads.json')
 const aRC = require('../api/restCollection')
 
-const teamStructure = {
-    portieri: [undefined, undefined, undefined],
-    difensori: [undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined],
-    centrocampisti: [undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined],
-    attaccanti: [undefined, undefined, undefined, undefined, undefined, undefined],
-}
-
 const roleMap = {
     attaccanti: 'a',
     centrocampisti: 'c',
