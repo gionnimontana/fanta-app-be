@@ -1,9 +1,5 @@
-const u = require('../scrapers/utils')
-const fs = require('fs');
-const getDirName = require('path').dirname;
 const mockSquads = require('../mock/squads.json')
-const mockPlayers = require('../mock/players')
-
+const aRC = require('../api/restCollection')
 
 const teamStructure = {
     portieri: [undefined, undefined, undefined],
@@ -12,52 +8,15 @@ const teamStructure = {
     attaccanti: [undefined, undefined, undefined, undefined, undefined, undefined],
 }
 
-const randomSort = v => v.sort(() => Math.random() - 0.5)
-
-async function getTeamsData() {
-	const operationsDoc = `
-    query MyQueryA {
-        fanta_squads {
-          crediti
-          giocatori
-          id
-        }
-      }
-	`;
-    const { errors, data } =  await u.fetchGraphQL(operationsDoc, "MyQueryA", {});
-    if (errors) {
-        console.error(errors);
-        return []
-    }
-    return data.fanta_squads
+const roleMap = {
+    attaccanti: 'a',
+    centrocampisti: 'c',
+    difensori: 'd',
+    portieri: 'p',
 }
 
-async function getPlayersData() {
-	const operationsDoc = `
-    query MyQueryB {
-        fanta_quots {
-          undiciideale
-          ruolo
-          fvm
-          id
-        }
-      }
-	`;
-    const { errors, data } = await u.fetchGraphQL(operationsDoc, "MyQueryB", {});
-    if (errors) {
-        console.error(errors);
-        return []
-    }
-    return data.fanta_quots
-}
-
-const getAuctionableSquads = async () => {
-    const squads = await getTeamsData()
-    const hidratedSquads = squads.map(s => ({
-        ...s,
-        giocatori: s.giocatori ? JSON.parse(s.giocatori) : {...teamStructure}
-    }))
-    return randomSort(hidratedSquads)
+const sortPerCredit = (squads) => {
+    return squads.sort((a, b) => b.crediti - a.crediti).map(s => s.id)
 }
 
 const countSquadsMissingRoleSlot = (role, hidratedSquads) => {
@@ -71,7 +30,7 @@ const countSquadsMissingRoleSlot = (role, hidratedSquads) => {
 }
 
 const getAuctionablePlayers = async (squads) => {
-    const players = await getPlayersData()
+    const players = await aRC.getAllPlayers()
     const unaviablePlayers = squads.reduce((acc, s) => {
         const allSquadPlayers = Object.values(s).filter(p => p !== undefined)
         return [...acc, ...allSquadPlayers]
@@ -80,21 +39,8 @@ const getAuctionablePlayers = async (squads) => {
 }
 
 const startAuction = async () => {
-    // let squads = await getAuctionableSquads()
-    // let players = await getAuctionablePlayers(squads)
-    
-    // const squadsPath = getDirName(__dirname) + '/mock/squads.json'
-    // const playerPath = getDirName(__dirname) + '/mock/players.json'
-
-    // fs.writeFileSync(squadsPath, JSON.stringify(squads));
-    // fs.writeFileSync(playerPath, JSON.stringify(players));
-
-    // console.log(mockSquads[0].crediti)
-    // console.log(mockPlayers[0].ruolo)
-
     const squads = mockSquads
-    const players = mockPlayers
-
+    const players = await getAuctionablePlayers(squads)
     const squadsWithP = roleAuction('portieri', squads, players)
     const squadsWithPD = roleAuction('difensori', squadsWithP, players)
     const squadsWithPDC = roleAuction('centrocampisti', squadsWithPD, players)
@@ -104,18 +50,15 @@ const startAuction = async () => {
         const idGiocatori = Object.values(s.giocatori).reduce((acc, el) => [...acc, ...el], [])
         return ({ ...s,nome: 'x', giocatori: idGiocatori.join('@') })
     })
-    // const dehidratedSquads = squadsWithPDCA.map(s => ({...s, giocatori: 'giocatoroni', nome: 'x'}))
 
-    // console.log('squadsWithPDCA', squadsWithPDCA.map(s => s.crediti))
-
-    // fs.writeFileSync(squadsPath, JSON.stringify(squadsWithPDCA));
-
-    await writeTeamsPlayers(dehidratedSquads)
+    console.log('squadsWithPDCA', squadsWithPDCA.map(s => s.crediti))
+    await aRC.writeSquads(dehidratedSquads)
 }
 
 const roleAuction = (role, squads, players) => {
     const callsNumber = countSquadsMissingRoleSlot(role, squads)
     const auctionerOrder = sortPerCredit(squads)
+    const reversedOrder = [...auctionerOrder].reverse()
     const auctNumber = auctionerOrder.length
     let squadMap = squads.reduce((acc, el) => {
        acc[el.id] = el
@@ -126,9 +69,12 @@ const roleAuction = (role, squads, players) => {
 
     for (let call = 0; call < callsNumber; call++) {
         const round = Math.floor(call / auctNumber)
+        const roundIsEven = round % 2 === 0
         const auctionerIndex = call - (round * auctNumber)
-        const titolaritaTarget = call < (callsNumber / 3) ? 80 : call < (callsNumber / 2) ? 60 : 0
-        const auctioner = auctionerOrder[auctionerIndex]
+        const squadEmptySlots = squads[auctionerIndex].giocatori[role].filter(g => g === null).length
+        const totalRoleSlots = squads[auctionerIndex].giocatori[role].length
+        const titolaritaTarget = (squadEmptySlots / totalRoleSlots) > 0.8 ? 80 : (squadEmptySlots / totalRoleSlots) > 0.45 ? 60 : 0
+        const auctioner = roundIsEven ? auctionerOrder[auctionerIndex] : reversedOrder[auctionerIndex]
         const wishList = remaningPlayers.filter(p => p.undiciideale > titolaritaTarget)
         const purchase = wishList.length > 0 ? wishList[0] : remaningPlayers[0]
         const purchaseIndex = squadMap[auctioner]?.giocatori[role].findIndex(el => el === null)
@@ -143,38 +89,6 @@ const roleAuction = (role, squads, players) => {
     }
 
     return Object.values(squadMap)
-}
-
-async function writeTeamsPlayers(teamsWithPlayers) {
-	const json = JSON.stringify(teamsWithPlayers)
-	const unquoted = json.replace(/"([^"]+)":/g, '$1:')
-
-	const mutationString = `
-        mutation insert_fanta_squads {
-            insert_fanta_squads(
-                objects: ${unquoted},
-                on_conflict: {
-                    constraint: fanta_squads_pkey,
-                    update_columns: [crediti, giocatori]
-                }
-            ) {
-                affected_rows
-            }
-        }
-    `
-    const result = await u.fetchGraphQL(mutationString, 'insert_fanta_squads', {})
-    console.log(result)
-}
-
-const sortPerCredit = (squads) => {
-    return squads.sort((a, b) => b.crediti - a.crediti).map(s => s.id)
-}
-
-const roleMap = {
-    attaccanti: 'a',
-    centrocampisti: 'c',
-    difensori: 'd',
-    portieri: 'p',
 }
 
 module.exports = {

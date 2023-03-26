@@ -22,7 +22,31 @@ const cleanPlayerVotes = async () => {
     return result
 }
 
+const cleanTeams = async () => {
+    console.log('Cleaning teams collection...')
+    const teams = await aRC.getAllSquads()
+    console.log('Found ' + teams.length + ' teams')
+    const promiseArray = teams.map((t) => {
+        return aRC.deleteTeam(t.id)
+    })
+    const result = await Promise.all(promiseArray)
+    return result
+}
+
+const cleanMatches = async () => {
+    console.log('Cleaning calendar collection...')
+    const matches = await aRC.getAllMatches()
+    console.log('Found ' + (matches?.length || 'no') + ' matches')
+    const promiseArray = (matches || []).map((m) => {
+        return aRC.deleteMatch(m.id)
+    })
+    const result = await Promise.all(promiseArray)
+    return result
+}
+
 module.exports = {
     cleanPlayerStats: cleanPlayerStats,
-    cleanPlayerVotes: cleanPlayerVotes
+    cleanPlayerVotes: cleanPlayerVotes,
+    cleanTeams: cleanTeams,
+    cleanMatches: cleanMatches
 }

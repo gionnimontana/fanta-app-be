@@ -62,31 +62,10 @@ async function scrapeAndWrite () {
     const stats = await quotsScraper()
     console.log('QuotsScraper - Writing the stats...')
     const result = await aRC.writePlayers(stats)
-    console.log('QuotsScraper - Write done, ' + result.length + ' players written')
+    console.log('QuotsScraper - END updated, ' + result.length + ' players')
 }
 
 module.exports = {
     run: scrapeAndWrite,
     scrape: quotsScraper
 }
-
-
-// const aQL = require('../api/graphQL')
-// async function writeQuotsQL(quots) {
-// 	const json = JSON.stringify(quots)
-// 	const unquoted = json.replace(/"([^"]+)":/g, '$1:')
-// 	const mutationString = `
-//         mutation insert_fanta_quots {
-//             insert_fanta_quots(
-//                 objects: ${unquoted},
-//                 on_conflict: {
-//                     constraint: fanta_stats_pkey,
-//                     update_columns: [quotazione, fvm, undiciideale, ruolo]
-//                 }
-//             ) {
-//                 affected_rows
-//             }
-//         }
-//     `
-//     return await aQL.fetchGraphQL(mutationString, 'insert_fanta_quots', {})
-// }

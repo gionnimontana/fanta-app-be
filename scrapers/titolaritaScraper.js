@@ -1,4 +1,5 @@
 const u = require('./utils')
+const aRC = require('../api/restCollection')
 
 const titolaritaScraper = async () => {
     const URL = 'https://www.fantacalcio.it/probabili-formazioni-serie-a';
@@ -30,39 +31,28 @@ const titolaritaScraper = async () => {
             squadra: team.name,
             giocatore: player.name,
             titolarita: player.titolarita || 0,
-            id: `${team.name}-${player.name}`,
         }))]
     }, [])
     return output   
 };
 
-async function writeTitolarita(titolarita) {
-	const json = JSON.stringify(titolarita)
-	const unquoted = json.replace(/"([^"]+)":/g, '$1:')
-	const mutationString = `
-        mutation insert_fanta_quots {
-            insert_fanta_quots(
-                objects: ${unquoted},
-                on_conflict: {
-                    constraint: fanta_stats_pkey,
-                    update_columns: [titolarita]
-                }
-            ) {
-                affected_rows
-            }
-        }
-    `
-    return await u.fetchGraphQL(mutationString, 'insert_fanta_quots', {})
-}
-
 async function scrapeAndWrite () {
     const stats = await titolaritaScraper()
-    const result = await writeTitolarita(stats)
-    console.log(result)
+    console.log('TitolaritaScraper - Getting players')
+    const players = await aRC.getAllPlayers()
+    const updatedPlayers = players.map(p => {
+        const player = stats.find(s => s.giocatore === p.giocatore && s.squadra === p.squadra)
+        return {
+            ...p,
+            play_next_match: player ? player.titolarita : 0,
+        }
+    })
+    console.log('TitolaritaScraper - updating players')
+    const result = await aRC.writePlayers(updatedPlayers)
+    console.log('TitolaritaScraper - END updated ', result.length , ' records')
 }
 
 module.exports = {
     run: scrapeAndWrite,
     scrape: titolaritaScraper,
-    write: writeTitolarita
 }

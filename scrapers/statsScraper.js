@@ -63,35 +63,13 @@ const turnsPlayerAndSquadIntoId = async (stats) => {
 
 async function scrapeAndWrite () {
     const stats = await statsScraper()
-    console.log('stats', stats)
+    console.log('StatsScraper - turnsPlayerAndSquadIntoId')
     const cleanedStats = await turnsPlayerAndSquadIntoId(stats)
     const result = await aRC.writeStats(cleanedStats)
-    console.log('scrapeAndWrite done - updated: ', result.length, ' records')
+    console.log('StatsScraper - END updated: ', result.length, ' records')
 }
 
 module.exports = {
     run: scrapeAndWrite,
     scrape: statsScraper,
 }
-
-
-
-// const aQL = require('../api/graphQL')
-// async function writeStatsQL(stats) {
-// 	const json = JSON.stringify(stats)
-// 	const unquoted = json.replace(/"([^"]+)":/g, '$1:')
-// 	const mutationString = `
-//         mutation insert_fanta_stats {
-//             insert_fanta_stats(
-//                 objects: ${unquoted},
-//                 on_conflict: {
-//                     constraint: fanta_stats_pkey1,
-//                     update_columns: [voto, fantavoto]
-//                 }
-//             ) {
-//                 affected_rows
-//             }
-//         }
-//     `
-//     return await aQL.fetchGraphQL(mutationString, 'insert_fanta_stats', {})
-// }

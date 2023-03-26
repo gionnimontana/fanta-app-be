@@ -57,13 +57,65 @@ const deleteVote = async (id) => {
     return requestRaw
 }
 
+const getAllSquads = async () => {
+    const requestRaw = await aR.getPB('collections/teams/records?perPage=500')
+    return requestRaw.items
+}
+
+const getAllMatches = async () => {
+    const requestRaw = await aR.getPB('collections/calendar/records?perPage=500')
+    return requestRaw.items
+}
+
+const writeMatches = async (newMatches) => {
+    const currentMatches = await getAllMatches()
+    const promiseArray = newMatches.map((nm) => {
+        const target = (currentMatches || []).find(cm => cm.id === nm.id)
+        if (target) {
+            return aR.patchPB(nm, 'collections/calendar/records/' + target.id)
+        } 
+        return aR.postPB(nm, 'collections/calendar/records')
+    })
+    const result = await Promise.all(promiseArray)
+    return result
+}
+
+const writeSquads = async (squads) => {
+    const currentSquads = await getAllSquads()
+    const promiseArray = squads.map((s) => {
+        const target = (currentSquads || []).find(c => c.name === s.id)
+        if (target) {
+            return aR.patchPB(s, 'collections/teams/records/' + target.id)
+        } 
+        return aR.postPB(s, 'collections/teams/records')
+    })
+    const result = await Promise.all(promiseArray)
+    return result
+}
+
+const deleteTeam = async (id) => {
+    const requestRaw = await aR.deletePB('collections/teams/records/' + id)
+    return requestRaw
+}
+
+const deleteMatch = async (id) => {
+    const requestRaw = await aR.deletePB('collections/calendar/records/' + id)
+    return requestRaw
+}
+
 module.exports = {
     getAllPlayers: getAllPlayers,
     getSinglePlayer: getSinglePlayer,
     getAllVotes: getAllVotes,
+    getAllSquads: getAllSquads,
+    getAllMatches: getAllMatches,
     writePlayer: writePlayer,
     writePlayers: writePlayers,
     writeStats: writeStats,
+    writeSquads: writeSquads,
+    writeMatches: writeMatches,
     deletePlayer: deletePlayer,
-    deleteVote: deleteVote
+    deleteVote: deleteVote,
+    deleteTeam: deleteTeam,
+    deleteMatch: deleteMatch
 }
