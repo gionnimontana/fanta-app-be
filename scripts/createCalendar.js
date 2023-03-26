@@ -1,9 +1,9 @@
-const squads = require('../mock/squads.json')
-const squadIds = squads.map(s => s.id)
 const aRC = require('../api/restCollection')
 
 const createCalendar = async () => {
     let days = 38
+    const squads = await aRC.getAllSquads()
+    const squadIds = squads.map(s => s.id)
     const teamsPairs = createMatchCalendar(squadIds)
     const pairsNumber = teamsPairs.length
     const matches = []

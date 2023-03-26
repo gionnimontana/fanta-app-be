@@ -1,8 +1,8 @@
 const u = require('./utils')
 const aRC = require('../api/restCollection')
 
-const statsScraper = async () => {
-    const URL = 'https://www.fantacalcio.it/voti-fantacalcio-serie-a/2022-23/24';
+const statsScraper = async (day) => {
+    const URL = `https://www.fantacalcio.it/voti-fantacalcio-serie-a/2022-23/${day}`;
     console.log('StatsScraper - Opening the browser...')
     const browser = await u.puppeteer.launch()
     const page = await browser.newPage()
@@ -61,8 +61,8 @@ const turnsPlayerAndSquadIntoId = async (stats) => {
     return stats.filter(s => s.player_id !== 'NOT FOUND')
 }
 
-async function scrapeAndWrite () {
-    const stats = await statsScraper()
+async function scrapeAndWrite (day) {
+    const stats = await statsScraper(day)
     console.log('StatsScraper - turnsPlayerAndSquadIntoId')
     const cleanedStats = await turnsPlayerAndSquadIntoId(stats)
     const result = await aRC.writeStats(cleanedStats)
@@ -71,5 +71,5 @@ async function scrapeAndWrite () {
 
 module.exports = {
     run: scrapeAndWrite,
-    scrape: statsScraper,
+    byDay: scrapeAndWrite
 }

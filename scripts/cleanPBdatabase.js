@@ -33,7 +33,7 @@ const cleanTeams = async () => {
     return result
 }
 
-const cleanMatches = async () => {
+const cleanCalendar = async () => {
     console.log('Cleaning calendar collection...')
     const matches = await aRC.getAllMatches()
     console.log('Found ' + (matches?.length || 'no') + ' matches')
@@ -48,5 +48,5 @@ module.exports = {
     cleanPlayerStats: cleanPlayerStats,
     cleanPlayerVotes: cleanPlayerVotes,
     cleanTeams: cleanTeams,
-    cleanMatches: cleanMatches
+    cleanCalendar: cleanCalendar
 }

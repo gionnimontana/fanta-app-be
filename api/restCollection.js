@@ -11,6 +11,12 @@ const getSinglePlayer = async (id) => {
     return requestRaw.items
 }
 
+const getPlayersByIds = async (ids) => {
+    const urlParams = ids.map(el => `id='${el}'`).join(' || ')
+    const requestRaw = await aR.getPB('collections/players_stats/records?filter=(' + urlParams + ')')
+    return requestRaw.items
+}
+
 const writePlayer = async (player) => {
     const requestRaw = await aR.postPB(player, 'collections/players_stats/records')
     return requestRaw
@@ -48,7 +54,13 @@ const deletePlayer = async (id) => {
 }
 
 const getAllVotes = async () => {
-    const requestRaw = await aR.getPB('collections/players_votes/records?perPage=750')
+    const requestRaw = await aR.getPB('collections/players_votes/records?perPage=500')
+    return requestRaw.items
+}
+
+const getVotesByDay = async (day) => {
+    const urlParams = `giornata=${day}`
+    const requestRaw = await aR.getPB('collections/players_votes/records?perPage=500&filter=(' + urlParams + ')')
     return requestRaw.items
 }
 
@@ -62,9 +74,31 @@ const getAllSquads = async () => {
     return requestRaw.items
 }
 
+const getSingleSquad = async (id) => {
+    const requestRaw = await aR.getPB('collections/teams/records/' + id)
+    return requestRaw
+}
+
 const getAllMatches = async () => {
     const requestRaw = await aR.getPB('collections/calendar/records?perPage=500')
     return requestRaw.items
+}
+
+const getMatchByDay = async (day) => {
+    const urlParams = `day=${day}`
+    const requestRaw = await aR.getPB('collections/calendar/records?filter=(' + urlParams + ')')
+    return requestRaw.items
+}
+
+const getMatchByDayAndTeam = async (day, teamId) => {
+    const matchOfTheDay = await getMatchByDay(day)
+    const target = matchOfTheDay.find(m => m.match.includes(teamId))
+    return target
+}
+
+const getMatchById = async (id) => {
+    const requestRaw = await aR.getPB('collections/calendar/records/' + id)
+    return requestRaw
 }
 
 const writeMatches = async (newMatches) => {
@@ -72,12 +106,17 @@ const writeMatches = async (newMatches) => {
     const promiseArray = newMatches.map((nm) => {
         const target = (currentMatches || []).find(cm => cm.id === nm.id)
         if (target) {
-            return aR.patchPB(nm, 'collections/calendar/records/' + target.id)
+            return updateMatch(nm, target.id)
         } 
         return aR.postPB(nm, 'collections/calendar/records')
     })
     const result = await Promise.all(promiseArray)
     return result
+}
+
+const updateMatch = async (id, values) => {
+    const requestRaw = await aR.patchPB(values, 'collections/calendar/records/' + id)
+    return requestRaw
 }
 
 const writeSquads = async (squads) => {
@@ -106,14 +145,21 @@ const deleteMatch = async (id) => {
 module.exports = {
     getAllPlayers: getAllPlayers,
     getSinglePlayer: getSinglePlayer,
+    getPlayersByIds: getPlayersByIds,
     getAllVotes: getAllVotes,
+    getVotesByDay: getVotesByDay,
     getAllSquads: getAllSquads,
+    getSingleSquad: getSingleSquad,
     getAllMatches: getAllMatches,
+    getMatchByDay: getMatchByDay,
+    getMatchById: getMatchById,
+    getMatchByDayAndTeam: getMatchByDayAndTeam,
     writePlayer: writePlayer,
     writePlayers: writePlayers,
     writeStats: writeStats,
     writeSquads: writeSquads,
     writeMatches: writeMatches,
+    updateMatch: updateMatch,
     deletePlayer: deletePlayer,
     deleteVote: deleteVote,
     deleteTeam: deleteTeam,
