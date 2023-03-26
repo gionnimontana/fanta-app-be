@@ -25,7 +25,7 @@ const writePlayer = async (player) => {
 const writePlayers = async (players) => {
     const currentPlayers = await getAllPlayers()
     const promiseArray = players.map((p) => {
-        const target = currentPlayers.find(c => c.giocatore === p.giocatore && c.squadra === p.squadra)
+        const target = currentPlayers.find(c => c.giocatore === p.giocatore && c.team === p.team)
         if (target) {
             return aR.patchPB(p, 'collections/players_stats/records/' + target.id)
         }
@@ -38,7 +38,7 @@ const writePlayers = async (players) => {
 const writeStats = async (stats) => {
     const currentVotes = await getAllVotes()
     const promiseArray = stats.map((s) => {
-        const target = currentVotes.find(c => c.player_id === s.player_id && c.giornata === s.giornata)
+        const target = currentVotes.find(c => c.player_id === s.player_id && c.day === s.day)
         if (target) {
             return aR.patchPB(s, 'collections/players_votes/records/' + target.id)
         }
@@ -59,7 +59,7 @@ const getAllVotes = async () => {
 }
 
 const getVotesByDay = async (day) => {
-    const urlParams = `giornata=${day}`
+    const urlParams = `day=${day}`
     const requestRaw = await aR.getPB('collections/players_votes/records?perPage=500&filter=(' + urlParams + ')')
     return requestRaw.items
 }

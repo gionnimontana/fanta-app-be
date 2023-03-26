@@ -28,7 +28,7 @@ const titolaritaScraper = async () => {
     console.log('TitolaritaScraper - Scrape done!')
     const output = stats.reduce((acc, team) => {
         return [...acc, ...team.players.map(player => ({
-            squadra: team.name,
+            team: team.name,
             giocatore: player.name,
             titolarita: player.titolarita || 0,
         }))]
@@ -41,7 +41,7 @@ async function scrapeAndWrite () {
     console.log('TitolaritaScraper - Getting players')
     const players = await aRC.getAllPlayers()
     const updatedPlayers = players.map(p => {
-        const player = stats.find(s => s.giocatore === p.giocatore && s.squadra === p.squadra)
+        const player = stats.find(s => s.giocatore === p.giocatore && s.team === p.team)
         return {
             ...p,
             play_next_match: player ? player.titolarita : 0,

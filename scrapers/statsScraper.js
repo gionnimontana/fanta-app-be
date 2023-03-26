@@ -40,8 +40,8 @@ const statsScraper = async (day) => {
             const fvoto = Number(player.fvote.replace(',', '.'))
             const regex = /[0-9]/g;
             return {
-                giornata: Number(gamesWeek.match(regex).join('')),
-                squadra: team.name,
+                day: Number(gamesWeek.match(regex).join('')),
+                team: team.name,
                 giocatore: player.name,
                 vote: voto === 55 ? null : voto,
                 fvote: fvoto === 55 ? null : fvoto,
@@ -54,7 +54,7 @@ const turnsPlayerAndSquadIntoId = async (stats) => {
     const players_stats = await aRC.getAllPlayers()
     stats.forEach((s) => {
         const player = players_stats.find(p => {
-            return p.giocatore === s.giocatore && p.squadra === s.squadra
+            return p.giocatore === s.giocatore && p.team === s.team
         })
         s.player_id = player ? player.id : 'NOT FOUND'
     })

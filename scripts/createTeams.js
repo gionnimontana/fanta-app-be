@@ -9,12 +9,12 @@ const roleMap = {
 }
 
 const sortPerCredit = (squads) => {
-    return squads.sort((a, b) => b.crediti - a.crediti).map(s => s.id)
+    return squads.sort((a, b) => b.credits - a.credits).map(s => s.id)
 }
 
 const countSquadsMissingRoleSlot = (role, hidratedSquads) => {
     return hidratedSquads.reduce((acc, hs) => {
-        const missingPlayers = hs.giocatori[role].reduce((a, g) => {
+        const missingPlayers = hs.players[role].reduce((a, g) => {
             if (g === null) a += 1
             return a
         }, 0)
@@ -40,11 +40,11 @@ const startAuction = async () => {
     const squadsWithPDCA = roleAuction('attaccanti', squadsWithPDC, players)
 
     const dehidratedSquads = squadsWithPDCA.map(s => {
-        const idGiocatori = Object.values(s.giocatori).reduce((acc, el) => [...acc, ...el], [])
-        return ({ ...s,nome: 'x', giocatori: idGiocatori.join('@') })
+        const idGiocatori = Object.values(s.players).reduce((acc, el) => [...acc, ...el], [])
+        return ({ ...s,nome: 'x', players: idGiocatori.join('@') })
     })
 
-    console.log('squadsWithPDCA', squadsWithPDCA.map(s => s.crediti))
+    console.log('squadsWithPDCA', squadsWithPDCA.map(s => s.credits))
     await aRC.writeSquads(dehidratedSquads)
 }
 
@@ -64,19 +64,19 @@ const roleAuction = (role, squads, players) => {
         const round = Math.floor(call / auctNumber)
         const roundIsEven = round % 2 === 0
         const auctionerIndex = call - (round * auctNumber)
-        const squadEmptySlots = squads[auctionerIndex].giocatori[role].filter(g => g === null).length
-        const totalRoleSlots = squads[auctionerIndex].giocatori[role].length
+        const squadEmptySlots = squads[auctionerIndex].players[role].filter(g => g === null).length
+        const totalRoleSlots = squads[auctionerIndex].players[role].length
         const titolaritaTarget = (squadEmptySlots / totalRoleSlots) > 0.8 ? 80 : (squadEmptySlots / totalRoleSlots) > 0.45 ? 60 : 0
         const auctioner = roundIsEven ? auctionerOrder[auctionerIndex] : reversedOrder[auctionerIndex]
-        const wishList = remaningPlayers.filter(p => p.undiciideale > titolaritaTarget)
+        const wishList = remaningPlayers.filter(p => p.starter_index > titolaritaTarget)
         const purchase = wishList.length > 0 ? wishList[0] : remaningPlayers[0]
-        const purchaseIndex = squadMap[auctioner]?.giocatori[role].findIndex(el => el === null)
+        const purchaseIndex = squadMap[auctioner]?.players[role].findIndex(el => el === null)
 
         if (purchaseIndex >= 0) {
-            const current = [...squadMap[auctioner].giocatori[role]]
+            const current = [...squadMap[auctioner].players[role]]
             current[purchaseIndex] = purchase.id
-            squadMap[auctioner].giocatori[role] = current
-            squadMap[auctioner].crediti = squadMap[auctioner].crediti - purchase.fvm
+            squadMap[auctioner].players[role] = current
+            squadMap[auctioner].credits = squadMap[auctioner].credits - purchase.fvm
             remaningPlayers = remaningPlayers.filter(p => p.id !== purchase.id)
         }
     }

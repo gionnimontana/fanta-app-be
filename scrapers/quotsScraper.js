@@ -35,18 +35,18 @@ const quotsScraper = async () => {
                 VER: 'Verona'
             }
             const teamSign = row.querySelector('.player-team').innerText.trim().replace('\n', '')
-            const squadra = td[teamSign] || teamSign
+            const team = td[teamSign] || teamSign
             const giocatore = row.querySelector('.player-name > a').innerText.trim().replace('\n', '')
             const fvm = Number(row.querySelector('.player-classic-fvm').innerText)
             const quotazione = Number(row.querySelector('.player-classic-current-price').innerText)
-            const undiciideale = Number(row.getAttribute('data-filter-playeds'))
+            const starter_index = Number(row.getAttribute('data-filter-playeds'))
             const ruolo = row.getAttribute('data-filter-role-classic')
             return {
                 giocatore,
-                squadra,
+                team,
                 quotazione,
                 fvm,
-                undiciideale,
+                starter_index,
                 ruolo
             };
         });
