@@ -11,13 +11,13 @@ const createScores = require('./scripts/createScores')
 
 const main = async () => {
     // await cleanPBdatabase.cleanCalendar()
-    // await statsScraper.run()
     // await quotsScraper.run()
+    // await statsScraper.run()
     // await titolaritaScraper.run()
     // await createTeams.run()
-    // await createCalendar.run()
+    await createCalendar.run()
     // await loadAutoFormation.byDay(27)
-    await createScores.allByDay(27)
+    // await createScores.allByDay(27)
 }
 
 main()

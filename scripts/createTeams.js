@@ -31,23 +31,6 @@ const getAuctionablePlayers = async (squads) => {
     return players.filter(p => !unaviablePlayers.includes(p))
 }
 
-const startAuction = async () => {
-    const squads = mockSquads
-    const players = await getAuctionablePlayers(squads)
-    const squadsWithP = roleAuction('portieri', squads, players)
-    const squadsWithPD = roleAuction('difensori', squadsWithP, players)
-    const squadsWithPDC = roleAuction('centrocampisti', squadsWithPD, players)
-    const squadsWithPDCA = roleAuction('attaccanti', squadsWithPDC, players)
-
-    const dehidratedSquads = squadsWithPDCA.map(s => {
-        const idGiocatori = Object.values(s.players).reduce((acc, el) => [...acc, ...el], [])
-        return ({ ...s,nome: 'x', players: idGiocatori.join('@') })
-    })
-
-    console.log('squadsWithPDCA', squadsWithPDCA.map(s => s.credits))
-    await aRC.writeSquads(dehidratedSquads)
-}
-
 const roleAuction = (role, squads, players) => {
     const callsNumber = countSquadsMissingRoleSlot(role, squads)
     const auctionerOrder = sortPerCredit(squads)
@@ -58,7 +41,7 @@ const roleAuction = (role, squads, players) => {
        return acc
     }, {})
 
-    let remaningPlayers = players.filter(p => p.ruolo === roleMap[role]).sort((a, b) => a.fvm - b.fvm).reverse()
+    let remaningPlayers = players.filter(p => p.role === roleMap[role]).sort((a, b) => a.fvm - b.fvm).reverse()
 
     for (let call = 0; call < callsNumber; call++) {
         const round = Math.floor(call / auctNumber)
@@ -82,6 +65,26 @@ const roleAuction = (role, squads, players) => {
     }
 
     return Object.values(squadMap)
+}
+
+const startAuction = async () => {
+    const squads = mockSquads
+    const players = await getAuctionablePlayers(squads)
+    const squadsWithP = roleAuction('portieri', squads, players)
+    const squadsWithPD = roleAuction('difensori', squadsWithP, players)
+    const squadsWithPDC = roleAuction('centrocampisti', squadsWithPD, players)
+    const squadsWithPDCA = roleAuction('attaccanti', squadsWithPDC, players)
+
+    const dehidratedSquads = squadsWithPDCA.map((s, id) => {
+        const idGiocatori = Object.values(s.players).reduce((acc, el) => [...acc, ...el], [])
+        return ({ 
+            credits: s.credits,
+            name: `squad-${id}`, 
+            players: idGiocatori.join('@') })
+    })
+
+    console.log('squadsWithPDCA', squadsWithPDCA.map(s => s.credits))
+    await aRC.writeSquads(dehidratedSquads)
 }
 
 module.exports = {

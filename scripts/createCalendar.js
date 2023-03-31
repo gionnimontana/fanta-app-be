@@ -8,7 +8,7 @@ const createCalendar = async () => {
     const pairsNumber = teamsPairs.length
     const matches = []
     
-    for (let day = 0; day <= days; day++) {
+    for (let day = 0; day < days; day++) {
         const round = Math.floor(day / pairsNumber)
         const pairsIndex = (day) - (round * pairsNumber)
         const targetPair = teamsPairs[pairsIndex]

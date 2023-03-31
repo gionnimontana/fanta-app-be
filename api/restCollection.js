@@ -29,7 +29,7 @@ const writePlayers = async (players) => {
         if (target) {
             return aR.patchPB(p, 'collections/players_stats/records/' + target.id)
         }
-        return aR.postPB(p, 'collections/players_stats/records')
+        return aR.postPB(p.map(), 'collections/players_stats/records')
     })
     const result = await Promise.all(promiseArray)
     return result

@@ -42,12 +42,12 @@ const quotsScraper = async () => {
             const starter_index = Number(row.getAttribute('data-filter-playeds'))
             const ruolo = row.getAttribute('data-filter-role-classic')
             return {
-                giocatore,
-                team,
-                quotazione,
+                name: giocatore,
+                team: team,
+                price: quotazione,
                 fvm,
                 starter_index,
-                ruolo
+                role: ruolo
             };
         });
     });

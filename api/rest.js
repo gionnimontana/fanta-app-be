@@ -3,14 +3,18 @@ const u = require('./utils')
 async function postPB(data, url) {
     const completeUrl = process.env.PB_URL + url
     console.log('Fetching POST =========> ', completeUrl)
-	const result = await u.fetch(completeUrl, {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-		},
-		body: JSON.stringify(data)
-	})
-	return await result.json()
+	try {
+		const result = await u.fetch(completeUrl, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify(data)
+		})
+		return await result.json()
+	} catch (error) {
+		console.log('Error in postPB', error)
+	}
 }
 
 async function getPB(url) {
