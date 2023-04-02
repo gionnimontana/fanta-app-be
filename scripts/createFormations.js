@@ -48,7 +48,7 @@ const getPlayersFormData = (players) => {
         return {
             fux: u.getPlayerFux(p),
             id: p.id,
-            role: p.ruolo
+            role: p.role
         }
     })
 }
@@ -61,7 +61,7 @@ const writeTeamFormation = async (team, match, formation) => {
   const f = JSON.stringify(formation)
   if (isHomeTeam) values.home_form = f
   if (isAwayTeam) values.away_form = f
-  const results = await aRC.updateMatch(values, match.id)
+  const results = await aRC.updateMatch(match.id, values)
   return results
 }
 
@@ -76,7 +76,7 @@ const loadSingleAutoFormation = async (teamId, day) => {
     const results = await writeTeamFormation(team, targetMatch, formation)
 
     // reduce rate limit on multiple requests (max 10 req/sec)
-    await u.sleep(100)
+    await u.sleep(1000)
 
     return results
 }

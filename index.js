@@ -15,8 +15,8 @@ const main = async () => {
     // await statsScraper.run()
     // await titolaritaScraper.run()
     // await createTeams.run()
-    await createCalendar.run()
-    // await loadAutoFormation.byDay(27)
+    // await createCalendar.run()
+    // await loadAutoFormation.byDay(28)
     // await createScores.allByDay(27)
 }
 

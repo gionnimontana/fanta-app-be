@@ -31,7 +31,7 @@ const getPlayersRolesMap = async (allPlayersIds) => {
     const secondPlayerBatch = await aRC.getPlayersByIds(secondHalf)
     const players = [...firstPlayerBatch, ...secondPlayerBatch]
     const playersRolesMap = players.reduce((acc, p) => {
-        acc[p.id] = p.ruolo
+        acc[p.id] = p.role
         return acc
     }, {})
     return playersRolesMap
