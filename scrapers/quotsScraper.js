@@ -4,7 +4,9 @@ const aRC = require('../api/restCollection')
 const quotsScraper = async () => {
     const URL = 'https://www.fantacalcio.it/quotazioni-fantacalcio';
     console.log('QuotsScraper - Opening the browser...')
-    const browser = await u.puppeteer.launch()
+    const browser = await u.puppeteer.launch({
+        args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    })
     const page = await browser.newPage()
     console.log(`QuotsScraper - Navigating to ${URL}...`)
     await page.goto(URL, { waitUntil: 'load' })
