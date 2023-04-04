@@ -4,7 +4,9 @@ const aRC = require('../api/restCollection')
 const titolaritaScraper = async () => {
     const URL = 'https://www.fantacalcio.it/probabili-formazioni-serie-a';
     console.log('TitolaritaScraper - Opening the browser...')
-    const browser = await u.puppeteer.launch()
+    const browser = await u.puppeteer.launch({
+        args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    })
     const page = await browser.newPage()
     console.log(`TitolaritaScraper - Navigating to ${URL}...`)
     await page.goto(URL, { waitUntil: 'load' })
