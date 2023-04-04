@@ -75,7 +75,7 @@ const calculateScore = (votes) => {
         return acc
     }, 0)
     const goals = Math.floor((sum - 60) / 6)
-    return goals
+    return goals < 0 ? 0 : goals
 }
 
 const calculateMatchScore = async (matchId) => {
