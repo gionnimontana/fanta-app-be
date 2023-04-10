@@ -119,12 +119,17 @@ const updateMatch = async (id, values) => {
     return requestRaw
 }
 
+const updateTeam = async (id, values) => {
+    const requestRaw = await aR.patchPB(values, 'collections/teams/records/' + id)
+    return requestRaw
+}
+
 const writeSquads = async (squads) => {
     const currentSquads = await getAllSquads()
     const promiseArray = squads.map((s) => {
         const target = (currentSquads || []).find(c => c.name === s.id)
         if (target) {
-            return aR.patchPB(s, 'collections/teams/records/' + target.id)
+            return updateTeam(target.id, s)
         } 
         return aR.postPB(s, 'collections/teams/records')
     })
@@ -160,6 +165,7 @@ module.exports = {
     writeSquads: writeSquads,
     writeMatches: writeMatches,
     updateMatch: updateMatch,
+    updateTeam: updateTeam,
     deletePlayer: deletePlayer,
     deleteVote: deleteVote,
     deleteTeam: deleteTeam,

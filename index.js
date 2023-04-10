@@ -18,6 +18,7 @@ const main = async () => {
     // await createCalendar.run()
     // await loadAutoFormation.byDay(28)
     // await createScores.allByDay(27)
+    await createRanking.run()
 }
 
 main()
