@@ -8,6 +8,7 @@ const createCalendar = require('./scripts/createCalendar')
 const cleanPBdatabase = require('./scripts/cleanPBdatabase')
 const loadAutoFormation = require('./scripts/createFormations')
 const createScores = require('./scripts/createScores')
+const createRanking = require('./scripts/createRanking')
 
 const main = async () => {
     // await cleanPBdatabase.cleanCalendar()
@@ -17,8 +18,8 @@ const main = async () => {
     // await createTeams.run()
     // await createCalendar.run()
     // await loadAutoFormation.byDay(28)
-    // await createScores.allByDay(27)
-    await createRanking.run()
+    // await createScores.allByDay(29)
+    // await createRanking.all()
 }
 
 main()

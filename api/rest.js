@@ -1,7 +1,10 @@
 const u = require('./utils')
+const PocketBase = require('pocketbase/cjs')
+const pb = new PocketBase(process.env.PB_URL);
+const apiUrl = process.env.PB_URL + '/api/'
 
 async function postPB(data, url) {
-    const completeUrl = process.env.PB_URL + url
+    const completeUrl = apiUrl + url
     console.log('Fetching POST =========> ', completeUrl)
 	try {
 		const result = await u.fetch(completeUrl, {
@@ -18,7 +21,7 @@ async function postPB(data, url) {
 }
 
 async function getPB(url) {
-    const completeUrl = process.env.PB_URL + url
+    const completeUrl = apiUrl + url
     console.log('Fetching GET =========> ', completeUrl)
 	const result = await u.fetch(completeUrl, {
 		method: 'GET',
@@ -30,7 +33,7 @@ async function getPB(url) {
 }
 
 async function deletePB(url) {
-    const completeUrl = process.env.PB_URL + url
+    const completeUrl = apiUrl + url
     console.log('Fetching DELETE =========> ', completeUrl)
     const result = await u.fetch(completeUrl, {
         method: 'DELETE',
@@ -42,7 +45,7 @@ async function deletePB(url) {
 }
 
 async function patchPB(data, url) {
-	const completeUrl = process.env.PB_URL + url
+	const completeUrl = apiUrl + url
 	console.log('Fetching PATCH =========> ', completeUrl)
 	const result = await u.fetch(completeUrl, {
 		method: 'PATCH',
@@ -58,5 +61,6 @@ module.exports = {
 	postPB: postPB,
 	getPB: getPB,
     deletePB: deletePB,
-	patchPB: patchPB
+	patchPB: patchPB,
+	pb: pb
 }

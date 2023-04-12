@@ -147,6 +147,19 @@ const deleteMatch = async (id) => {
     return requestRaw
 }
 
+const getAllTeamMatches = async (teamId) => {
+    console.log('match from teamId', teamId)
+    const result = await aR.pb.collection('calendar').getList(1, 40, {
+        filter: `(match~'${teamId}' && result!='')`
+    });
+    return result.items
+}
+
+const writeTeamScore = async (teamId, score) => {
+    return await updateTeam(teamId, {score})
+}
+
+
 module.exports = {
     getAllPlayers: getAllPlayers,
     getSinglePlayer: getSinglePlayer,
@@ -159,11 +172,13 @@ module.exports = {
     getMatchByDay: getMatchByDay,
     getMatchById: getMatchById,
     getMatchByDayAndTeam: getMatchByDayAndTeam,
+    getAllTeamMatches: getAllTeamMatches,
     writePlayer: writePlayer,
     writePlayers: writePlayers,
     writeStats: writeStats,
     writeSquads: writeSquads,
     writeMatches: writeMatches,
+    writeTeamScore: writeTeamScore,
     updateMatch: updateMatch,
     updateTeam: updateTeam,
     deletePlayer: deletePlayer,
