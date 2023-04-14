@@ -7,16 +7,10 @@ const titolaritaScraper = require('./scrapers/titolaritaScraper')
 
 const main = async () => {
     await quotsScraper.run()
-    await utils.sleep(10000)
+    await utils.sleep(5000)
     await statsScraper.run()
-    await utils.sleep(10000)
+    await utils.sleep(5000)
     await titolaritaScraper.run()
 }
 
-const exec = async () => {
-    await main()
-    await utils.sleep(20000)
-    await main()
-}
-
-exec()
+main()

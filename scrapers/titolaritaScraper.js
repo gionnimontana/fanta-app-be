@@ -19,7 +19,7 @@ const titolaritaScraper = async () => {
             name: row.querySelector('.team-name').innerText,
             players: [...row.querySelectorAll('.player-item')].map(player => ({
                 name: player.querySelector('.player-name')?.innerText,
-                titolarita: Number(player.querySelector('.progress-value')?.innerText.replace('%', '')),
+                play_next_match: Number(player.querySelector('.progress-value')?.innerText.replace('%', '')),
             }))
         };
         });
@@ -32,7 +32,7 @@ const titolaritaScraper = async () => {
         return [...acc, ...team.players.map(player => ({
             team: team.name,
             name: player.name,
-            titolarita: player.titolarita || 0,
+            play_next_match: player.play_next_match || 0,
         }))]
     }, [])
     return output   
@@ -46,7 +46,7 @@ async function scrapeAndWrite () {
         const player = stats.find(s => s.name === p.name && s.team === p.team)
         return {
             ...p,
-            play_next_match: player ? player.titolarita : 0,
+            play_next_match: player ? player.play_next_match : 0,
         }
     })
     console.log('TitolaritaScraper - updating players')

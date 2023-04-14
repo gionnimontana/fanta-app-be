@@ -11,9 +11,9 @@ const createScores = require('./scripts/createScores')
 const createRanking = require('./scripts/createRanking')
 
 const main = async () => {
-    // await cleanPBdatabase.cleanCalendar()
+    // await cleanPBdatabase.cleanPlayerVotes()
     // await quotsScraper.run()
-    // await statsScraper.run()
+    await statsScraper.run()
     // await titolaritaScraper.run()
     // await createTeams.run()
     // await createCalendar.run()

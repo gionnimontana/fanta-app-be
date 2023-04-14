@@ -1,4 +1,5 @@
 const aR = require('./rest')
+const u = require('../scripts/utils')
 
 const getAllPlayers = async () => {
     const page1 = await aR.getPB('collections/players_stats/records?perPage=500&page=1')
@@ -24,29 +25,41 @@ const writePlayer = async (player) => {
 
 const writePlayers = async (players) => {
     const currentPlayers = await getAllPlayers()
-    const promiseArray = players.map((p) => {
-        const target = currentPlayers.find(c => c.giocatore === p.giocatore && c.team === p.team)
+    const results = []
+    for (let p of players) {
+        const target = currentPlayers.find(c =>{
+            const name = c.name.toLowerCase()
+            const team = c.team.toLowerCase()
+            return (name === p.name.toLowerCase() && team === p.team.toLowerCase())
+        })
         if (target) {
-            return aR.patchPB(p, 'collections/players_stats/records/' + target.id)
+            const r = await aR.patchPB(p, 'collections/players_stats/records/' + target.id)
+            results.push(r)
+        } else {
+            const r = await aR.postPB(p, 'collections/players_stats/records')
+            results.push(r)
         }
-        return aR.postPB(p.map(), 'collections/players_stats/records')
-    })
-    const result = await Promise.all(promiseArray)
-    return result
+    }
+    return results
 }
 
 const writeStats = async (stats) => {
-    const currentVotes = await getAllVotes()
-    const promiseArray = stats.map((s) => {
-        const target = currentVotes.find(c => c.player_id === s.player_id && c.day === s.day)
-        if (target) {
-            return aR.patchPB(s, 'collections/players_votes/records/' + target.id)
-        }
-        return aR.postPB(s, 'collections/players_votes/records')
-    })
-    const result = await Promise.all(promiseArray)
-    return result
-}
+    const day = stats[0].day
+    if (!day) throw new Error('WriteStats Error - Day is missing')
+    const currentVotes = await getVotesByDay(day)
+    const results = []
+    for (let s of stats) {
+      const target = currentVotes.find(c => c.player_id === s.player_id && c.day === s.day)
+      if (target) {
+        const r = await aR.patchPB(s, 'collections/players_votes/records/' + target.id)
+        results.push(r)
+      } else {
+        const r = await aR.postPB(s, 'collections/players_votes/records')
+        results.push(r)
+      }
+    }
+    return results
+  }
 
 const deletePlayer = async (id) => {
     const requestRaw = await aR.deletePB('collections/players_stats/records/' + id)
@@ -103,16 +116,19 @@ const getMatchById = async (id) => {
 
 const writeMatches = async (newMatches) => {
     const currentMatches = await getAllMatches()
-    const promiseArray = newMatches.map((nm) => {
-        const target = (currentMatches || []).find(cm => cm.id === nm.id)
-        if (target) {
-            return updateMatch(nm, target.id)
-        } 
-        return aR.postPB(nm, 'collections/calendar/records')
-    })
-    const result = await Promise.all(promiseArray)
-    return result
-}
+    const results = []
+    for (let nm of newMatches) {
+      const target = (currentMatches || []).find(cm => cm.id === nm.id)
+      if (target) {
+        const r = await updateMatch(nm, target.id)
+        results.push(r)
+      } else {
+        const r = await aR.postPB(nm, 'collections/calendar/records')
+        results.push(r)
+      }
+    }
+    return results
+  }
 
 const updateMatch = async (id, values) => {
     const requestRaw = await aR.patchPB(values, 'collections/calendar/records/' + id)
@@ -126,16 +142,19 @@ const updateTeam = async (id, values) => {
 
 const writeSquads = async (squads) => {
     const currentSquads = await getAllSquads()
-    const promiseArray = squads.map((s) => {
-        const target = (currentSquads || []).find(c => c.name === s.id)
-        if (target) {
-            return updateTeam(target.id, s)
-        } 
-        return aR.postPB(s, 'collections/teams/records')
-    })
-    const result = await Promise.all(promiseArray)
-    return result
-}
+    const results = []
+    for (let s of squads) {
+      const target = (currentSquads || []).find(c => c.name === s.id)
+      if (target) {
+        const r = await updateTeam(target.id, s)
+        results.push(r)
+      } else {
+        const r = await aR.postPB(s, 'collections/teams/records')
+        results.push(r)
+      }
+    }
+    return results
+  }
 
 const deleteTeam = async (id) => {
     const requestRaw = await aR.deletePB('collections/teams/records/' + id)
