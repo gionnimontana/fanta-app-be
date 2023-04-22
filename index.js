@@ -13,11 +13,11 @@ const createRanking = require('./scripts/createRanking')
 const main = async () => {
     // await cleanPBdatabase.cleanPlayerVotes()
     // await quotsScraper.run()
-    await statsScraper.run()
+    // await statsScraper.run()
     // await titolaritaScraper.run()
     // await createTeams.run()
     // await createCalendar.run()
-    // await loadAutoFormation.byDay(28)
+    await loadAutoFormation.byDay(31)
     // await createScores.allByDay(29)
     // await createRanking.all()
 }
