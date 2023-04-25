@@ -45,14 +45,14 @@ const calculateFormVotes = (formRaw, votesMap, rolesMap) => {
         acc[playerId] = votesMap[playerId]
         return acc
     }, {})
-    const unVotedPlayers = Object.keys(votes).filter(v => votesMap[v] === undefined)
+    const unVotedPlayers = Object.keys(votes).filter(v => !votesMap[v])
     if (unVotedPlayers.length === 0) return votes
     let subCount = 0
     const benchers = {
-        a: b.filter(playerId => rolesMap[playerId] === 'a' && votesMap[playerId] !== undefined),
-        d: b.filter(playerId => rolesMap[playerId] === 'd' && votesMap[playerId] !== undefined),
-        c: b.filter(playerId => rolesMap[playerId] === 'c' && votesMap[playerId] !== undefined),
-        p: b.filter(playerId => rolesMap[playerId] === 'p' && votesMap[playerId] !== undefined),
+        a: b.filter(playerId => rolesMap[playerId] === 'a' && votesMap[playerId]),
+        d: b.filter(playerId => rolesMap[playerId] === 'd' && votesMap[playerId]),
+        c: b.filter(playerId => rolesMap[playerId] === 'c' && votesMap[playerId]),
+        p: b.filter(playerId => rolesMap[playerId] === 'p' && votesMap[playerId]),
     }
     unVotedPlayers.forEach(playerId => {
         if (subCount === 5) return
