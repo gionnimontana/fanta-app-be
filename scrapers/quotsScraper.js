@@ -40,13 +40,11 @@ const quotsScraper = async () => {
             const team = td[teamSign] || teamSign
             const giocatore = row.querySelector('.player-name > a').innerText.trim().replace('\n', '')
             const fvm = Number(row.querySelector('.player-classic-fvm').innerText)
-            const quotazione = Number(row.querySelector('.player-classic-current-price').innerText)
             const starter_index = Number(row.getAttribute('data-filter-playeds'))
             const ruolo = row.getAttribute('data-filter-role-classic')
             return {
                 name: giocatore,
                 team: team,
-                price: quotazione,
                 fvm,
                 starter_index,
                 role: ruolo
