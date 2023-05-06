@@ -18,6 +18,14 @@ const getPlayersByIds = async (ids) => {
     return requestRaw.items
 }
 
+const getTeamPlayers = async (teamId) => {
+    const result = await aR.pb.collection('purchases').getList(1, 40, {
+        filter: `(team='${teamId}')`,
+        expand: 'player',
+    });
+    return result.items.map(el => el.expand.player)
+}
+
 const writePlayer = async (player) => {
     const requestRaw = await aR.postPB(player, 'collections/players_stats/records')
     return requestRaw
@@ -178,6 +186,16 @@ const writeTeamScore = async (teamId, score) => {
     return await updateTeam(teamId, {score})
 }
 
+const writePurchase = async (playerID, squadID) => {
+    const requestRaw = await aR.postPB({
+        player: playerID, 
+        team: squadID
+    }, 'collections/purchases/records')
+
+    return requestRaw
+}
+
+
 
 module.exports = {
     getAllPlayers: getAllPlayers,
@@ -192,12 +210,14 @@ module.exports = {
     getMatchById: getMatchById,
     getMatchByDayAndTeam: getMatchByDayAndTeam,
     getAllTeamMatches: getAllTeamMatches,
+    getTeamPlayers: getTeamPlayers,
     writePlayer: writePlayer,
     writePlayers: writePlayers,
     writeStats: writeStats,
     writeSquads: writeSquads,
     writeMatches: writeMatches,
     writeTeamScore: writeTeamScore,
+    writePurchase: writePurchase,
     updateMatch: updateMatch,
     updateTeam: updateTeam,
     deletePlayer: deletePlayer,

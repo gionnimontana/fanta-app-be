@@ -67,8 +67,7 @@ const writeTeamFormation = async (team, match, formation) => {
 
 const loadSingleAutoFormation = async (teamId, day) => {
     const team = await aRC.getSingleSquad(teamId)
-    const playersIds = team.players.split('@')
-    const teamPlayers = await aRC.getPlayersByIds(playersIds)
+    const teamPlayers = await aRC.getTeamPlayers(teamId)
     const playersFormData = getPlayersFormData(teamPlayers)
     const sortedRoster = playersFormData.sort((a, b) => b.fux - a.fux)
     const formation = buildFormation(sortedRoster)
