@@ -199,6 +199,32 @@ const writePurchase = async (playerID, squadID) => {
     return requestRaw
 }
 
+const getArticleByDay = async (day) => {
+    const urlParams = `day=${day}`
+    const requestRaw = await aR.getPB('collections/articles/records?filter=(' + urlParams + ')')
+    return requestRaw.items   
+}
+
+const writeArticle = async (day, title, content, category) => {
+    const existingArticle = await getArticleByDay(day)
+    const sameCategoryArticle = existingArticle.find(a => a.category === category)
+    if (sameCategoryArticle) {
+        const res = await aR.patchPB({
+            title,
+            content
+        }, 'collections/articles/records/' + sameCategoryArticle.id)
+        return res
+    } else {
+        const res = await aR.postPB({
+            day,
+            title,
+            content,
+            category
+        }, 'collections/articles/records')
+        return res
+    }
+}
+
 
 
 module.exports = {
@@ -206,6 +232,7 @@ module.exports = {
     getSinglePlayer: getSinglePlayer,
     getPlayersByIds: getPlayersByIds,
     getAllVotes: getAllVotes,
+    getArticleByDay: getArticleByDay,
     getVotesByDay: getVotesByDay,
     getAllSquads: getAllSquads,
     getSingleSquad: getSingleSquad,
@@ -215,6 +242,7 @@ module.exports = {
     getMatchByDayAndTeam: getMatchByDayAndTeam,
     getAllTeamMatches: getAllTeamMatches,
     getTeamPlayers: getTeamPlayers,
+    writeArticle: writeArticle,
     writePlayer: writePlayer,
     writePlayers: writePlayers,
     writeStats: writeStats,
