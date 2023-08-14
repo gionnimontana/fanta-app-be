@@ -17,7 +17,7 @@ const quotsScraper = async () => {
             const td = {
                 ATA: 'Atalanta',
                 BOL: 'Bologna',
-                CRE: 'Cremonese',
+                CAG: 'Cagliari',
                 EMP: 'Empoli',
                 FIO: 'Fiorentina',
                 INT: 'Inter',
@@ -29,9 +29,9 @@ const quotsScraper = async () => {
                 NAP: 'Napoli',
                 ROM: 'Roma',
                 SAL: 'Salernitana',
-                SAM: 'Sampdoria',
+                GEN: 'Genoa',
                 SAS: 'Sassuolo',
-                SPE: 'Spezia',
+                FRO: 'Frosinone',
                 TOR: 'Torino',
                 UDI: 'Udinese',
                 VER: 'Verona'
