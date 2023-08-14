@@ -2,7 +2,7 @@ const u = require('./utils')
 const aRC = require('../api/restCollection')
 
 const statsScraper = async (day) => {
-    const URL = `https://www.fantacalcio.it/voti-fantacalcio-serie-a/2022-23/${day}`;
+    const URL = `https://www.fantacalcio.it/voti-fantacalcio-serie-a/2023-24/${day}`;
     console.log('StatsScraper - Opening the browser...')
     const browser = await u.puppeteer.launch({
         args: ['--no-sandbox', '--disable-setuid-sandbox'],

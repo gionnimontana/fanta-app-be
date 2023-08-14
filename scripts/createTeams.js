@@ -68,23 +68,28 @@ const roleAuction = (role, squads, players) => {
 }
 
 const startAuction = async () => {
-    const squads = mockSquads
+    const teams = await aRC.getAllSquads()
+    const squads = mockSquads.map((el, i) => ({
+        ...el,
+        id: teams[i].id,
+    }))
     const players = await getAuctionablePlayers(squads)
     const squadsWithP = roleAuction('portieri', squads, players)
     const squadsWithPD = roleAuction('difensori', squadsWithP, players)
     const squadsWithPDC = roleAuction('centrocampisti', squadsWithPD, players)
     const squadsWithPDCA = roleAuction('attaccanti', squadsWithPDC, players)
 
-    const dehidratedSquads = squadsWithPDCA.map((s, id) => {
+    const dehidratedSquads = squadsWithPDCA.map((s) => {
         const idGiocatori = Object.values(s.players).reduce((acc, el) => [...acc, ...el], [])
         return ({ 
             credits: s.credits,
-            name: `squad-${id}`, 
-            players: idGiocatori.join('@') })
+            id: s.id, 
+            players: idGiocatori
+        })
     })
 
-    console.log('squadsWithPDCA', squadsWithPDCA.map(s => s.credits))
-    await aRC.writeSquads(dehidratedSquads)
+    console.log('auction done')
+    await aRC.writeSquads(dehidratedSquads, players)
 }
 
 module.exports = {

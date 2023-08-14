@@ -148,20 +148,24 @@ const updateTeam = async (id, values) => {
     return requestRaw
 }
 
-const writeSquads = async (squads) => {
-    const currentSquads = await getAllSquads()
-    const results = []
+const writeSquads = async (squads, players) => {
+    const resultsPurchases = []
+    const resultsSquads = []
     for (let s of squads) {
-      const target = (currentSquads || []).find(c => c.name === s.id)
-      if (target) {
-        const r = await updateTeam(target.id, s)
-        results.push(r)
-      } else {
-        const r = await aR.postPB(s, 'collections/teams/records')
-        results.push(r)
-      }
+        for (let p of s.players) {
+            const targetPlayer = players.find(el => el.id === p)
+            const record = {
+                team: s.id,
+                player: p,
+                price: targetPlayer?.fvm || 0,
+            }
+            const rp = await aR.postPB(record, 'collections/purchases/records')
+            resultsPurchases.push(rp)
+        }
+        const rs = await updateTeam(s.id, {credits: s.credits})
+        resultsSquads.push(rs)
     }
-    return results
+    return [resultsPurchases, resultsSquads]
   }
 
 const deleteTeam = async (id) => {
