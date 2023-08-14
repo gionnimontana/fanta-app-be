@@ -82,11 +82,12 @@ const loadSingleAutoFormation = async (teamId, day) => {
 
 const loadAllTeamsFormationsByDay = async (day) => {
   const teams = await aRC.getAllSquads()
-  const teamsIds = teams.map(el => el.id)
   const results = []
-  for (const teamId of teamsIds) {
-    const res = await loadSingleAutoFormation(teamId, day)
-    results.push(res)
+  for (const t of teams) {
+    if (t.auto_formation) {
+      const res = await loadSingleAutoFormation(t.id, day)
+      results.push(res)
+    }
   }
   return results
 }
