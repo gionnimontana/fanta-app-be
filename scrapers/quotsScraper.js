@@ -46,7 +46,7 @@ const quotsScraper = async () => {
                 name: giocatore,
                 team: team,
                 fvm,
-                starter_index,
+                // starter_index,
                 role: ruolo
             };
         });
