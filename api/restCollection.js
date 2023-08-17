@@ -26,6 +26,11 @@ const getTeamPlayers = async (teamId) => {
     return result.items.map(el => el.expand.player)
 }
 
+const updatePlayer = async (id, values) => {
+    const requestRaw = await aR.patchPB(values, 'collections/players_stats/records/' + id)
+    return requestRaw
+}
+
 const writePlayer = async (player) => {
     const requestRaw = await aR.postPB(player, 'collections/players_stats/records')
     return requestRaw
@@ -160,6 +165,7 @@ const writeSquads = async (squads, players) => {
                 price: targetPlayer?.fvm || 0,
             }
             const rp = await aR.postPB(record, 'collections/purchases/records')
+            await aR.patchPB({fanta_team: s.id}, 'collections/players_stats/records/' + p)
             resultsPurchases.push(rp)
         }
         const rs = await updateTeam(s.id, {credits: s.credits})
@@ -225,12 +231,17 @@ const writeArticle = async (day, title, content, category) => {
     }
 }
 
-
+const getPurchaseByTeam = async (teamId) => {
+    const urlParams = `team='${teamId}'`
+    const requestRaw = await aR.getPB('collections/purchases/records?filter=(' + urlParams + ')')
+    return requestRaw.items
+}
 
 module.exports = {
     getAllPlayers: getAllPlayers,
     getSinglePlayer: getSinglePlayer,
     getPlayersByIds: getPlayersByIds,
+    getPurchaseByTeam: getPurchaseByTeam,
     getAllVotes: getAllVotes,
     getArticleByDay: getArticleByDay,
     getVotesByDay: getVotesByDay,
@@ -252,6 +263,7 @@ module.exports = {
     writePurchase: writePurchase,
     updateMatch: updateMatch,
     updateTeam: updateTeam,
+    updatePlayer: updatePlayer,
     deletePlayer: deletePlayer,
     deleteVote: deleteVote,
     deleteTeam: deleteTeam,
