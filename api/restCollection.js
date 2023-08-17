@@ -19,11 +19,10 @@ const getPlayersByIds = async (ids) => {
 }
 
 const getTeamPlayers = async (teamId) => {
-    const result = await aR.pb.collection('purchases').getList(1, 40, {
-        filter: `(team='${teamId}')`,
-        expand: 'player',
+    const result = await aR.pb.collection('players_stats').getList(1, 60, {
+        filter: `(fanta_team='${teamId}')`,
     });
-    return result.items.map(el => el.expand.player)
+    return result.items
 }
 
 const updatePlayer = async (id, values) => {
