@@ -163,9 +163,8 @@ const writeSquads = async (squads, players) => {
                 player: p,
                 price: targetPlayer?.fvm || 0,
             }
-            const rp = await aR.postPB(record, 'collections/purchases/records')
-            await aR.patchPB({fanta_team: s.id}, 'collections/players_stats/records/' + p)
-            resultsPurchases.push(rp)
+            const r = await aR.patchPB({fanta_team: s.id}, 'collections/players_stats/records/' + p)
+            resultsPurchases.push(r)
         }
         const rs = await updateTeam(s.id, {credits: s.credits})
         resultsSquads.push(rs)
