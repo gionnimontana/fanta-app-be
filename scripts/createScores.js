@@ -1,8 +1,7 @@
 const aRC = require('../api/restCollection')
 const u = require('./utils')
 
-const getAllFormPlayersIds = (formRaw) => {
-    const form = JSON.parse(formRaw)
+const getAllFormPlayersIds = (form) => {
     return [...form.s, ...form.b]
 }
 
@@ -38,8 +37,7 @@ const getPlayersRolesMap = async (allPlayersIds) => {
 }
 
 
-const calculateFormVotes = (formRaw, votesMap, rolesMap) => {
-    const form = JSON.parse(formRaw)
+const calculateFormVotes = (form, votesMap, rolesMap) => {
     const { s, b, m } = form
     const votes = s.reduce((acc, playerId) => {
         acc[playerId] = votesMap[playerId]
