@@ -112,8 +112,31 @@ const calculateMatchesScoresByDay = async (day) => {
     return result
 }
 
+const allAutomated = async () => {
+    const schedule = await aRC.getSortedSchedule()
+    const nowTS = new Date().getTime()
+    const matchDayInProgess = schedule.find(s => {
+        const matchStartTS = new Date(s.start).getTime()
+        const matchEndTS = new Date(s.end).getTime()
+        const diff = nowTS - matchStartTS
+        return diff > 0 && diff < matchEndTS
+    })
+    const matchDayEndedLessThanADayAgo = schedule.find(s => {
+        const matchTS = new Date(s.end).getTime()
+        const diff = nowTS - matchTS
+        return diff > 0 && diff < 86400000
+    })
+    if (matchDayInProgess || matchDayEndedLessThanADayAgo) {
+        console.log('@@@CONDITIONAL-SCRIPT@@@ - calculateMatchesScoresByDay:', matchDayInProgess.day || matchDayEndedLessThanADayAgo.day)
+        return await calculateMatchesScoresByDay(matchDayInProgess.day || matchDayEndedLessThanADayAgo.day)
+    } else {
+        console.log('@@@CONDITIONAL-SCRIPT@@@ - calculateMatchesScoresByDay: NO RUN')
+    }
+}
+
 module.exports = {
     allByDay: calculateMatchesScoresByDay,
-    singleByMatch: calculateMatchScore
+    singleByMatch: calculateMatchScore,
+    allAutomated: allAutomated,
 }
 

@@ -91,7 +91,34 @@ const loadAllTeamsFormationsByDay = async (day) => {
   return results
 }
 
+const getCurrentMatchDay = (matchDayTimestamps) => {
+  const nowTS = new Date().getTime()
+  let matchDayIndex = 0
+  for (let i = 0; i <= matchDayTimestamps.length; i++) {
+      const endTS = new Date(matchDayTimestamps[i]?.end).getTime()
+      if (nowTS < endTS) {
+          matchDay = i
+          break
+      }
+  }
+  return matchDayTimestamps[matchDayIndex]
+}
+
+const allAutomated = async () => {
+  const schedule = await aRC.getSortedSchedule()
+  const nowTS = new Date().getTime()
+  const currentMatch = getCurrentMatchDay(schedule)
+  const matchDayHasStarted = new Date(currentMatch.start).getTime() < nowTS
+  if (!matchDayHasStarted) {
+      console.log('@@@CONDITIONAL-SCRIPT@@@ - loadAllTeamsFormationsByDay:', matchDayEndedLessThanADayAgo.day)
+      return await loadAllTeamsFormationsByDay(currentMatch.day)
+  } else {
+    console.log('@@@CONDITIONAL-SCRIPT@@@ - loadAllTeamsFormationsByDay: NO RUN')
+  }
+}
+
 module.exports = {
     byDay: loadAllTeamsFormationsByDay,
-    single: loadSingleAutoFormation
+    single: loadSingleAutoFormation,
+    allAutomated: allAutomated
 }

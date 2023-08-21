@@ -47,8 +47,25 @@ const calculateTeamsRanking = async () => {
     return results
 }
 
+const allAutomated = async () => {
+    const schedule = await aRC.getSortedSchedule()
+    const nowTS = new Date().getTime()
+    const matchDayEndedLessThanADayAgo = schedule.find(s => {
+        const matchTS = new Date(s.end).getTime()
+        const diff = nowTS - matchTS
+        return diff > 0 && diff < 86400000
+    })
+    if (matchDayEndedLessThanADayAgo) {
+        console.log('@@@CONDITIONAL-SCRIPT@@@ - calculateTeamRanking:', matchDayEndedLessThanADayAgo.day)
+        return await calculateTeamsRanking(matchDayEndedLessThanADayAgo.day)
+    } else {
+        console.log('@@@CONDITIONAL-SCRIPT@@@ - calculateTeamRanking: NO RUN')
+    }
+}
+
 
 module.exports = {
     byTeam: calculateTeamRanking,
     all: calculateTeamsRanking,
+    allAutomated: allAutomated,
 }

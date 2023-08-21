@@ -190,6 +190,13 @@ const getAllTeamMatches = async (teamId) => {
     return result.items
 }
 
+const getSortedSchedule = async () => {
+    const result = await aR.pb.collection('schedules').getList(1, 40, {
+        sort: 'day'
+    });
+    return result.items
+}
+
 const writeTeamScore = async (teamId, score) => {
     return await updateTeam(teamId, {score})
 }
@@ -251,6 +258,7 @@ module.exports = {
     getMatchByDayAndTeam: getMatchByDayAndTeam,
     getAllTeamMatches: getAllTeamMatches,
     getTeamPlayers: getTeamPlayers,
+    getSortedSchedule: getSortedSchedule,
     writeArticle: writeArticle,
     writePlayer: writePlayer,
     writePlayers: writePlayers,
