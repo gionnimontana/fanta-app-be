@@ -56,7 +56,7 @@ const turnsPlayerAndSquadIntoId = async (stats) => {
     const players_stats = await aRC.getAllPlayers()
     stats.forEach((s) => {
         const player = players_stats.find(p => {
-            return p.name === s.name && p.team === s.team
+            return p.name === s.name
         })
         s.player_id = player ? player.id : 'NOT FOUND'
     })

@@ -41,8 +41,7 @@ const writePlayers = async (players) => {
     for (let p of players) {
         const target = currentPlayers.find(c =>{
             const name = c.name.toLowerCase()
-            const team = c.team.toLowerCase()
-            return (name === p.name.toLowerCase() && team === p.team.toLowerCase())
+            return (name === p.name.toLowerCase())
         })
         if (target) {
             const r = await aR.patchPB(p, 'collections/players_stats/records/' + target.id)
@@ -63,8 +62,10 @@ const writeStats = async (stats) => {
     for (let s of stats) {
       const target = currentVotes.find(c => c.player_id === s.player_id && c.day === s.day)
       if (target) {
-        const r = await aR.patchPB(s, 'collections/players_votes/records/' + target.id)
-        results.push(r)
+        if (Number(target.fvote) !== Number(s.fvote)) {
+            const r = await aR.patchPB(s, 'collections/players_votes/records/' + target.id)
+            results.push(r)
+        }
       } else {
         const r = await aR.postPB(s, 'collections/players_votes/records')
         results.push(r)
