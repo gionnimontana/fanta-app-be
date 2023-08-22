@@ -10,6 +10,7 @@ const loadAutoFormation = require('./scripts/createFormations')
 const createScores = require('./scripts/createScores')
 const createRanking = require('./scripts/createRanking')
 const createAritcle = require('./scripts/createArticles')
+const validatePurchase = require('./scripts/validatePurchase')
 
 const main = async () => {
 
@@ -25,6 +26,7 @@ const main = async () => {
     // await createScores.allByDay(32)
     // await createRanking.all()
     // await createAritcle.allAutomated()
+    await validatePurchase.singleById('2dr2viqdiwh95nq')
 }
 
 main()

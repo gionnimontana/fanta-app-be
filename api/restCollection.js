@@ -243,11 +243,28 @@ const getPurchaseByTeam = async (teamId) => {
     return requestRaw.items
 }
 
+const getSinglePurchase = async (id) => {
+    const requestRaw = await aR.getPB('collections/purchases/records/' + id )
+    return requestRaw
+}
+
+const getAllPurchases = async () => {
+    const requestRaw = await aR.getPB('collections/purchases/records?perPage=500&filter=(closed=false)')
+    return requestRaw.items
+}
+
+const updatePurchase = async (id, values) => {
+    const requestRaw = await aR.patchPB(values, 'collections/purchases/records/' + id)
+    return requestRaw
+}
+
 module.exports = {
     getAllPlayers: getAllPlayers,
     getSinglePlayer: getSinglePlayer,
     getPlayersByIds: getPlayersByIds,
     getPurchaseByTeam: getPurchaseByTeam,
+    getSinglePurchase: getSinglePurchase,
+    getAllPurchases: getAllPurchases,
     getAllVotes: getAllVotes,
     getArticleByDay: getArticleByDay,
     getVotesByDay: getVotesByDay,
@@ -271,6 +288,7 @@ module.exports = {
     updateMatch: updateMatch,
     updateTeam: updateTeam,
     updatePlayer: updatePlayer,
+    updatePurchase: updatePurchase,
     deletePlayer: deletePlayer,
     deleteVote: deleteVote,
     deleteTeam: deleteTeam,
