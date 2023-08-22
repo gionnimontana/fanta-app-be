@@ -7,7 +7,7 @@ const titolaritaScraper = require('./scrapers/titolaritaScraper')
 const createScores = require('./scripts/createScores')
 const createRanking = require('./scripts/createRanking')
 const loadAutoFormation = require('./scripts/createFormations')
-const createAritcle = require('./scripts/createArticles')
+const createArticles = require('./scripts/createArticles')
 
 const main = async () => {
     // always excecuted
@@ -23,7 +23,7 @@ const main = async () => {
     await utils.sleep(3000)
     await createRanking.allAutomated()
     await utils.sleep(3000)
-    await createAritcle.allAutomated()
+    await createArticles.allAutomated()
 }
 
 main()

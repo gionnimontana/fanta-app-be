@@ -1,4 +1,5 @@
 const aRC = require('../api/restCollection')
+const maturePurchaseOffset = 86400000 // 24h
 
 const singleById = async (id) => {
     const purchase = await aRC.getSinglePurchase(id)
@@ -6,6 +7,15 @@ const singleById = async (id) => {
     const fromTeam = squads.find(s => s.id === purchase.from_team)
     const toTeam = squads.find(s => s.id === purchase.to_team)
     await validatePurchaseUnsafe(purchase, fromTeam, toTeam)
+}
+
+const validateAllMaturePurchases = async () => {
+    const purchases = await aRC.getAllOpenPurchases()
+    const nowTS = Date.now()
+    const matureTs = nowTS - maturePurchaseOffset
+    const isMature = (p) => new Date(p.updated).getTime() < matureTs
+    const maturePurchases = purchases.filter(isMature)
+    await validateAll(maturePurchases)
 }
 
 const validateAll = async (purchases) => {
@@ -33,5 +43,6 @@ const validatePurchaseUnsafe = async (purchase, fromTeam, toTeam) => {
 
 module.exports = {
     singleById: singleById,
-    all: validateAll
+    all: validateAll,
+    allAutomated: validateAllMaturePurchases
 }

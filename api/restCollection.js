@@ -258,6 +258,11 @@ const updatePurchase = async (id, values) => {
     return requestRaw
 }
 
+const getAllOpenPurchases = async () => {
+    const requestRaw = await aR.getPB('collections/purchases/records?perPage=500&filter=(closed=false)')
+    return requestRaw.items
+}
+
 module.exports = {
     getAllPlayers: getAllPlayers,
     getSinglePlayer: getSinglePlayer,
@@ -265,6 +270,7 @@ module.exports = {
     getPurchaseByTeam: getPurchaseByTeam,
     getSinglePurchase: getSinglePurchase,
     getAllPurchases: getAllPurchases,
+    getAllOpenPurchases: getAllOpenPurchases,
     getAllVotes: getAllVotes,
     getArticleByDay: getArticleByDay,
     getVotesByDay: getVotesByDay,
