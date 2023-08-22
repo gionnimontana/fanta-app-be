@@ -9,6 +9,7 @@ const cleanPBdatabase = require('./scripts/cleanPBdatabase')
 const loadAutoFormation = require('./scripts/createFormations')
 const createScores = require('./scripts/createScores')
 const createRanking = require('./scripts/createRanking')
+const createAritcle = require('./scripts/createArticles')
 
 const main = async () => {
 
@@ -23,6 +24,7 @@ const main = async () => {
     // await loadAutoFormation.byDay(35)
     // await createScores.allByDay(32)
     // await createRanking.all()
+    // await createAritcle.allAutomated()
 }
 
 main()
