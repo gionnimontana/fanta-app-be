@@ -1,6 +1,8 @@
 const aRC = require('../api/restCollection')
 const u = require('./utils')
 
+const maxSubstitutions = 5
+
 const getAllFormPlayersIds = (form) => {
     return [...form.s, ...form.b]
 }
@@ -53,7 +55,7 @@ const calculateFormVotes = (form, votesMap, rolesMap) => {
         p: b.filter(playerId => rolesMap[playerId] === 'p' && votesMap[playerId]),
     }
     unVotedPlayers.forEach(playerId => {
-        if (subCount === 5) return
+        if (subCount === maxSubstitutions) return
         const role = rolesMap[playerId]
         const benchCandidates = benchers[role]
         if (benchCandidates.length > 0) {
