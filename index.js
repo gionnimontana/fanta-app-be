@@ -19,11 +19,11 @@ const main = async () => {
     // await createCalendar.run()
 
     // await quotsScraper.run()
-    // await statsScraper.run()
+    // await statsScraper.allAutomated()
     // await titolaritaScraper.run()
     
-    // await loadAutoFormation.byDay(35)
-    // await createScores.allByDay(32)
+    // await loadAutoFormation.byDay(2)
+    // await createScores.allAutomated()
     // await createRanking.all()
     // await createAritcle.allAutomated()
     // await validatePurchase.allAutomated()

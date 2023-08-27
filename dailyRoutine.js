@@ -13,12 +13,13 @@ const main = async () => {
     // always excecuted
     await quotsScraper.run()
     await utils.sleep(5000)
-    await statsScraper.run()
-    await utils.sleep(5000)
     await titolaritaScraper.run()
     
     // conditionally executed
     await loadAutoFormation.allAutomated()
+    await utils.sleep(2000)
+    await statsScraper.allAutomated()
+    await utils.sleep(5000)
     await createScores.allAutomated()
     await utils.sleep(3000)
     await createRanking.allAutomated()

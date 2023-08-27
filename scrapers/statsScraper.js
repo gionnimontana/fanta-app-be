@@ -1,5 +1,6 @@
 const u = require('./utils')
 const aRC = require('../api/restCollection')
+const h = require('../helpers/index')
 
 const statsScraper = async (day) => {
     const URL = `https://www.fantacalcio.it/voti-fantacalcio-serie-a/2023-24/${day}`;
@@ -71,7 +72,20 @@ async function scrapeAndWrite (day) {
     console.log('StatsScraper - END updated: ', result.length, ' records')
 }
 
+const audoDayScraper = async () => {
+    const schedule = await aRC.getSortedSchedule()
+    const matchDayInProgess = h.isMatchDayInProgess(schedule)
+    const matchDayEndedLessThanADayAgo = h.isMatchDayEndedLessThanADayAgo(schedule)
+    if (matchDayInProgess || matchDayEndedLessThanADayAgo) {
+        console.log('@@@CONDITIONAL-SCRAPER@@@ - Create Scores:', matchDayInProgess.day || matchDayEndedLessThanADayAgo.day)
+        return await scrapeAndWrite(matchDayInProgess.day || matchDayEndedLessThanADayAgo.day)
+    } else {
+        console.log('@@@CONDITIONAL-SCRAPER@@@ - Create Scores: NO RUN')
+    }
+}
+
 module.exports = {
     run: scrapeAndWrite,
-    byDay: scrapeAndWrite
+    byDay: scrapeAndWrite,
+    allAutomated: audoDayScraper
 }
