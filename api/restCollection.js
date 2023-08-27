@@ -1,5 +1,5 @@
 const aR = require('./rest')
-const u = require('../scripts/utils')
+const u = require('./utils')
 
 const getAllPlayers = async () => {
     const page1 = await aR.getPB('collections/players_stats/records?perPage=500&page=1')
@@ -44,8 +44,11 @@ const writePlayers = async (players) => {
             return (name === p.name.toLowerCase())
         })
         if (target) {
-            const r = await aR.patchPB(p, 'collections/players_stats/records/' + target.id)
-            results.push(r)
+            const playersAreEqual = u.comparePlayers(p, target)
+            if (!playersAreEqual) {
+                const r = await aR.patchPB(p, 'collections/players_stats/records/' + target.id)
+                results.push(r)
+            }
         } else {
             const r = await aR.postPB(p, 'collections/players_stats/records')
             results.push(r)
