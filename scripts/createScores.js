@@ -121,7 +121,8 @@ const allAutomated = async () => {
         const matchStartTS = new Date(s.start).getTime()
         const matchEndTS = new Date(s.end).getTime()
         const diff = nowTS - matchStartTS
-        return diff > 0 && diff < matchEndTS
+        const diff2 = nowTS - matchEndTS
+        return diff > 0 && diff2 < 0
     })
     const matchDayEndedLessThanADayAgo = schedule.find(s => {
         const matchTS = new Date(s.end).getTime()
