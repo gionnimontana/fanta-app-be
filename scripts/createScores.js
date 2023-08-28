@@ -1,5 +1,6 @@
 const aRC = require('../api/restCollection')
 const u = require('./utils')
+const h = require('../helpers/index')
 
 const maxSubstitutions = 5
 
@@ -116,18 +117,8 @@ const calculateMatchesScoresByDay = async (day) => {
 
 const allAutomated = async () => {
     const schedule = await aRC.getSortedSchedule()
-    const nowTS = new Date().getTime()
-    const matchDayInProgess = schedule.find(s => {
-        const matchStartTS = new Date(s.start).getTime()
-        const matchEndTS = new Date(s.end).getTime()
-        const diff = nowTS - matchStartTS
-        return diff > 0 && diff < matchEndTS
-    })
-    const matchDayEndedLessThanADayAgo = schedule.find(s => {
-        const matchTS = new Date(s.end).getTime()
-        const diff = nowTS - matchTS
-        return diff > 0 && diff < 86400000
-    })
+    const matchDayInProgess = h.isMatchDayInProgess(schedule)
+    const matchDayEndedLessThanADayAgo = h.isMatchDayEndedLessThanADayAgo(schedule)
     if (matchDayInProgess || matchDayEndedLessThanADayAgo) {
         console.log('@@@CONDITIONAL-SCRIPT@@@ - calculateMatchesScoresByDay:', matchDayInProgess.day || matchDayEndedLessThanADayAgo.day)
         return await calculateMatchesScoresByDay(matchDayInProgess.day || matchDayEndedLessThanADayAgo.day)
