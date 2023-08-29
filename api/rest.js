@@ -11,7 +11,9 @@ const tokenWrapper = {
 		const password = process.env.PB_ADMIN_PASSWORD
 		try {
 			await pb.admins.authWithPassword(user, password);
-		} catch (e) {}
+		} catch (e) {
+			console.log('@@@ Authentication ERROR:',e)
+		}
 		this.apiToken = pb.authStore.token
 		return this.apiToken
 	}
@@ -55,7 +57,7 @@ async function deletePB(url) {
         method: 'DELETE',
         headers: {
             'Content-Type': 'application/json',
-						'Authorization': await tokenWrapper.getToken()
+			'Authorization': await tokenWrapper.getToken()
         }
     })
     return await result.json()
@@ -78,7 +80,7 @@ async function patchPB(data, url) {
 module.exports = {
 	postPB: postPB,
 	getPB: getPB,
-  deletePB: deletePB,
+  	deletePB: deletePB,
 	patchPB: patchPB,
 	pb: pb
 }

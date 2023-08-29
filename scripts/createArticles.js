@@ -1,6 +1,6 @@
 const { Configuration, OpenAIApi } = require("openai");
 const aRC = require('../api/restCollection');
-const { all } = require("./createRanking");
+const h = require('../helpers/index')
 
 const configuration = new Configuration({
     apiKey: process.env.OPENAI_API_KEY,
@@ -49,12 +49,7 @@ const writeMainDayArticle = async (day, ended) => {
 
 const allAutomated = async () => {
     const schedule = await aRC.getSortedSchedule()
-    const nowTS = new Date().getTime()
-    const matchDayEndedLessThanADayAgo = schedule.find(s => {
-        const matchTS = new Date(s.end).getTime()
-        const diff = nowTS - matchTS
-        return diff > 0 && diff < 86400000
-    })
+    const matchDayEndedLessThanADayAgo = h.isMatchDayEndedLessThanADayAgo(schedule)
     if (matchDayEndedLessThanADayAgo) {
         console.log('@@@CONDITIONAL-SCRIPT@@@ - writeMainDayArticle:', matchDayEndedLessThanADayAgo.day)
         await writeMainDayArticle(matchDayEndedLessThanADayAgo.day, true)
