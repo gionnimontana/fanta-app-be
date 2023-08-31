@@ -8,13 +8,16 @@ const calculateTeamRanking = async (teamId) => {
     const dailyScore = matches.reduce((acc, m) => {
         const result = JSON.parse(m.result)
         const isHome = m.match.split('-')[0] === teamId
+        const votes = isHome ? result.home : result.away
+        const votesSum = Object.values(votes).reduce((acc, v) => acc + v, 0) 
         const gf = isHome ? result.score.home : result.score.away
         const ga = isHome ? result.score.away : result.score.home
         const pts = gf - ga < 0 ? 0 : gf - ga === 0 ? 1 : 3
         acc.push({
             gf,
             ga,
-            pts
+            pts,
+            vs: votesSum
         })
         return acc
     }, [])
@@ -22,6 +25,7 @@ const calculateTeamRanking = async (teamId) => {
         acc.gf += d.gf
         acc.ga += d.ga
         acc.pts += d.pts
+        acc.vs += d.vs
         if (d.pts === 3) {
             acc.w += 1
         } else if (d.pts === 1) {
@@ -30,7 +34,7 @@ const calculateTeamRanking = async (teamId) => {
             acc.l += 1
         }
         return acc
-    }, { gf: 0, ga: 0, pts: 0, w: 0, d: 0, l: 0 })
+    }, { gf: 0, ga: 0, pts: 0, w: 0, d: 0, l: 0, vs: 0 })
     globalScore.mp = dailyScore.length
     console.log('globalScore', globalScore)
     const result = await aRC.writeTeamScore(teamId, globalScore)
