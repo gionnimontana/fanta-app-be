@@ -11,6 +11,26 @@ const cleanPlayerStats = async () => {
     return result
 }
 
+const removeOutOfGamesRefoundingTeams = async () => {
+    console.log('Removing out of game players from player_stats refounding teams...')
+    const stats = await aRC.getAllPlayers()
+    const out_of_game = stats.filter(s => s.out_of_game)
+    for (let s of out_of_game) {
+        const teamId = s.fanta_team
+        if (teamId) {
+            const team = await aRC.getSingleSquad(teamId)
+            if (team) {
+                const newTeamCredits = team.credits + s.fvm
+                console.log('Removing ' + s.name + ' from team ' + team.name + ' and refounding ' + s.fvm + ' credits')
+                await aRC.updateTeam(teamId, {credits: newTeamCredits})
+            }
+        }
+        console.log('Deleting ' + s.name + ' from player_stats')
+        await aRC.deletePlayer(s.id)
+    }
+}
+
+
 const cleanPlayerVotes = async () => {
     console.log('Cleaning player_votes collection...')
     const votes = await aRC.getAllVotes()
@@ -48,5 +68,6 @@ module.exports = {
     cleanPlayerStats: cleanPlayerStats,
     cleanPlayerVotes: cleanPlayerVotes,
     cleanTeams: cleanTeams,
-    cleanCalendar: cleanCalendar
+    cleanCalendar: cleanCalendar,
+    removeOutOfGamesRefoundingTeams: removeOutOfGamesRefoundingTeams
 }

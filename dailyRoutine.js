@@ -8,6 +8,7 @@ const createScores = require('./scripts/createScores')
 const createRanking = require('./scripts/createRanking')
 const loadAutoFormation = require('./scripts/createFormations')
 const createArticles = require('./scripts/createArticles')
+const validatePurchase = require('./scripts/validatePurchase')
 
 const main = async () => {
     // always excecuted
@@ -19,12 +20,14 @@ const main = async () => {
     await loadAutoFormation.allAutomated()
     await utils.sleep(2000)
     await statsScraper.allAutomated()
-    await utils.sleep(5000)
+    await utils.sleep(2000)
     await createScores.allAutomated()
-    await utils.sleep(3000)
+    await utils.sleep(2000)
     await createRanking.allAutomated()
-    await utils.sleep(3000)
+    await utils.sleep(2000)
     await createArticles.allAutomated()
+    // await utils.sleep(2000)
+    // await validatePurchase.allAutomated()
 }
 
 main()

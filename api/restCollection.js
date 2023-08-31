@@ -50,8 +50,10 @@ const writePlayers = async (players) => {
                 results.push(r)
             }
         } else {
-            const r = await aR.postPB(p, 'collections/players_stats/records')
-            results.push(r)
+            if (!p.out_of_game) {
+                const r = await aR.postPB(p, 'collections/players_stats/records')
+                results.push(r)
+            }
         }
     }
     return results

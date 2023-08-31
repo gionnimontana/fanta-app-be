@@ -40,14 +40,16 @@ const quotsScraper = async () => {
             const team = td[teamSign] || teamSign
             const giocatore = row.querySelector('.player-name > a').innerText.trim().replace('\n', '')
             const fvm = Number(row.querySelector('.player-classic-fvm').innerText)
+            const outOfGame = row.querySelectorAll('.player-name > span').length > 1
             const starter_index = Number(row.getAttribute('data-filter-playeds'))
             const ruolo = row.getAttribute('data-filter-role-classic')
             return {
                 name: giocatore,
                 team: team,
                 fvm,
-                // starter_index,
-                role: ruolo
+                starter_index,
+                role: ruolo,
+                out_of_game: outOfGame
             };
         });
     });

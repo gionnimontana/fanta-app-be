@@ -60,7 +60,7 @@ async function deletePB(url) {
 			'Authorization': await tokenWrapper.getToken()
         }
     })
-    return await result.json()
+		return result
 }
 
 async function patchPB(data, url) {

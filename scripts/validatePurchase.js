@@ -1,4 +1,5 @@
 const aRC = require('../api/restCollection')
+const h = require('../helpers/index')
 const maturePurchaseOffset = 86400000 // 24h
 
 const singleById = async (id) => {
@@ -41,8 +42,19 @@ const validatePurchaseUnsafe = async (purchase, fromTeam, toTeam) => {
   await aRC.updatePurchase(purchase.id, {closed: true})
 }
 
+const allAutomated = async () => {
+  const matchDayInProgess = h.isMatchDayInProgess(schedule)
+  if (matchDayInProgess) {
+    console.log('@@@CONDITIONAL-SCRIPT@@@ - auto validatePurchase: NO RUN')
+    return
+  }
+  console.log('@@@CONDITIONAL-SCRIPT@@@ - auto validatePurchase: START')
+  return await validateAllMaturePurchases()
+}
+
+
 module.exports = {
     singleById: singleById,
     all: validateAll,
-    allAutomated: validateAllMaturePurchases
+    allAutomated: allAutomated
 }
