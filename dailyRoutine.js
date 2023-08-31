@@ -26,8 +26,8 @@ const main = async () => {
     await createRanking.allAutomated()
     await utils.sleep(2000)
     await createArticles.allAutomated()
-    // await utils.sleep(2000)
-    // await validatePurchase.allAutomated()
+    await utils.sleep(2000)
+    await validatePurchase.allAutomated()
 }
 
 main()
