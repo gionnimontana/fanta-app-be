@@ -19,10 +19,11 @@ const getPlayersByIds = async (ids) => {
 }
 
 const getTeamPlayers = async (teamId) => {
-    const result = await aR.pb.collection('players_stats').getList(1, 60, {
-        filter: `(fanta_team='${teamId}')`,
+    const result = await aR.pb.collection('team_players').getList(1, 60, {
+        filter: `(team='${teamId}')`,
+        expand: "player"
     });
-    return result.items
+    return result.items.map(el => el.expand.player)
 }
 
 const updatePlayer = async (id, values) => {
@@ -132,6 +133,13 @@ const getMatchById = async (id) => {
     return requestRaw
 }
 
+const getTeamPlayerByLeagueAndPlayerId = async (leagueId, playerId) => {
+    const result = await aR.pb.collection('team_players').getList(1, 40, {
+        filter: `(player='${playerId}' && league='${leagueId}')`
+    });
+    return result && result.items[0]
+}
+
 const writeMatches = async (newMatches) => {
     const currentMatches = await getAllMatches()
     const results = []
@@ -163,7 +171,7 @@ const writeSquads = async (squads, players) => {
     const resultsSquads = []
     for (let s of squads) {
         for (let p of s.players) {
-            const r = await aR.patchPB({fanta_team: s.id}, 'collections/players_stats/records/' + p)
+            const r = await writeTeamPlayer(s.id, p, 'ernyanuus7tdszx')
             resultsPurchases.push(r)
         }
         const rs = await updateTeam(s.id, {credits: s.credits})
@@ -179,6 +187,11 @@ const deleteTeam = async (id) => {
 
 const deleteMatch = async (id) => {
     const requestRaw = await aR.deletePB('collections/calendar/records/' + id)
+    return requestRaw
+}
+
+const deleteTeamPlayer = async (id) => {
+    const requestRaw = await aR.deletePB('collections/team_players/records/' + id)
     return requestRaw
 }
 
@@ -295,6 +308,7 @@ module.exports = {
     getMatchByDayAndTeam: getMatchByDayAndTeam,
     getAllTeamMatches: getAllTeamMatches,
     getTeamPlayers: getTeamPlayers,
+    getTeamPlayerByLeagueAndPlayerId: getTeamPlayerByLeagueAndPlayerId,
     getSortedSchedule: getSortedSchedule,
     writeArticle: writeArticle,
     writePlayer: writePlayer,
@@ -309,6 +323,7 @@ module.exports = {
     updateTeam: updateTeam,
     updatePlayer: updatePlayer,
     updatePurchase: updatePurchase,
+    deleteTeamPlayer: deleteTeamPlayer,
     deletePlayer: deletePlayer,
     deleteVote: deleteVote,
     deleteTeam: deleteTeam,

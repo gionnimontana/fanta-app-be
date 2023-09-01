@@ -14,15 +14,21 @@ const cleanPlayerStats = async () => {
 const removeOutOfGamesRefoundingTeams = async () => {
     console.log('Removing out of game players from player_stats refounding teams...')
     const stats = await aRC.getAllPlayers()
+    const teamPlayers = await aRC.getTeamPlayers()
     const out_of_game = stats.filter(s => s.out_of_game)
     for (let s of out_of_game) {
-        const teamId = s.fanta_team
-        if (teamId) {
-            const team = await aRC.getSingleSquad(teamId)
-            if (team) {
-                const newTeamCredits = team.credits + s.fvm
-                console.log('Removing ' + s.name + ' from team ' + team.name + ' and refounding ' + s.fvm + ' credits')
-                await aRC.updateTeam(teamId, {credits: newTeamCredits})
+        const teamPlayerRecords = teamPlayers.findAll(tp => tp.player === s.id)
+        if (teamPlayerRecords.length > 0) {
+            for (let tpr of teamPlayerRecords) {
+                const teamId = tpr.team
+                const team = await aRC.getSingleSquad(teamId)
+                if (team) {
+                    const newTeamCredits = team.credits + s.fvm
+                    console.log('Removing ' + s.name + ' from team ' + team.name + ' and refounding ' + s.fvm + ' credits')
+                    await aRC.updateTeam(teamId, {credits: newTeamCredits})
+                    console.log('Deleting ' + s.name + ' from team_players')
+                    await aRC.deleteTeamPlayer(tpr.id)
+                }
             }
         }
         console.log('Deleting ' + s.name + ' from player_stats')

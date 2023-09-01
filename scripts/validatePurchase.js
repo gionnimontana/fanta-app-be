@@ -30,16 +30,18 @@ const validateAll = async () => {
 }
 
 const validatePurchaseUnsafe = async (purchase, fromTeam, toTeam) => {
+  const leagueID = "ernyanuus7tdszx"
   if (fromTeam) {
+    const teamPlayerId = await aRC.getTeamPlayerByLeagueAndPlayerId(leagueID, purchase.player)
+    if (teamPlayerId) await aRC.deleteTeamPlayer(teamPlayerId)
     const fromTeamCredits = fromTeam.credits + purchase.price
     await aRC.updateTeam(fromTeam.id, {credits: fromTeamCredits})
   }
   if (toTeam) {
+    await aRC.writeTeamPlayer(toTeam.id, purchase.player, leagueID)
     const toTeamCredits = toTeam.credits - purchase.price
     await aRC.updateTeam(toTeam.id, {credits: toTeamCredits})
   }
-  
-  await aRC.updatePlayer(purchase.player, {fanta_team: purchase.to_team || null })
   await aRC.updatePurchase(purchase.id, {closed: true})
 }
 
