@@ -19,7 +19,8 @@ const validateAllMaturePurchases = async () => {
     await validateAll(maturePurchases)
 }
 
-const validateAll = async (purchases) => {
+const validateAll = async () => {
+  const purchases = await aRC.getAllOpenPurchases()
     const squads = await aRC.getAllSquads()
     for (const purchase of purchases) {
         const fromTeam = squads.find(s => s.id === purchase.from_team)

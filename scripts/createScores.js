@@ -59,7 +59,7 @@ const calculateFormVotes = (form, votesMap, rolesMap) => {
         if (subCount === maxSubstitutions) return
         const role = rolesMap[playerId]
         const benchCandidates = benchers[role]
-        if (benchCandidates.length > 0) {
+        if (benchCandidates && benchCandidates.length > 0) {
             const benchPlayerId = benchCandidates[0]
             votes[benchPlayerId] = votesMap[benchPlayerId]
             benchers[role].shift()
@@ -97,7 +97,7 @@ const calculateMatchScore = async (matchId) => {
         }
     }
     const result = await aRC.updateMatch(matchId, {
-        result: JSON.stringify(payload)
+        result: payload
     })
     
     // reduce rate limit on multiple requests (max 10 req/sec)

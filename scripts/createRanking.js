@@ -4,7 +4,6 @@ const h = require('../helpers/index')
 
 const calculateTeamRanking = async (teamId) => {
     const matches = await aRC.getAllTeamMatches(teamId)
-    console.log(matches, 'matches')
     const dailyScore = matches.reduce((acc, m) => {
         const result = JSON.parse(m.result)
         const isHome = m.match.split('-')[0] === teamId
@@ -36,7 +35,6 @@ const calculateTeamRanking = async (teamId) => {
         return acc
     }, { gf: 0, ga: 0, pts: 0, w: 0, d: 0, l: 0, vs: 0 })
     globalScore.mp = dailyScore.length
-    console.log('globalScore', globalScore)
     const result = await aRC.writeTeamScore(teamId, globalScore)
     return result
 }
