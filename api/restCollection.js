@@ -241,6 +241,15 @@ const writeArticle = async (day, title, content, category) => {
     }
 }
 
+const writeTeamPlayer = async (teamId, playerId, leagueId) => {
+    const requestRaw = await aR.postPB({
+        team: teamId,
+        player: playerId,
+        league: leagueId
+    }, 'collections/team_players/records')
+    return requestRaw
+}
+
 const getPurchaseByTeam = async (teamId) => {
     const urlParams = `team='${teamId}'`
     const requestRaw = await aR.getPB('collections/purchases/records?filter=(' + urlParams + ')')
@@ -295,6 +304,7 @@ module.exports = {
     writeMatches: writeMatches,
     writeTeamScore: writeTeamScore,
     writePurchase: writePurchase,
+    writeTeamPlayer: writeTeamPlayer,
     updateMatch: updateMatch,
     updateTeam: updateTeam,
     updatePlayer: updatePlayer,
