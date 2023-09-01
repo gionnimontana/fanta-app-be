@@ -15,7 +15,8 @@ const createCalendar = async () => {
         targetPair.forEach(teamPair => {
             matches.push({
                 day: day + 1,
-                match: `${teamPair[0]}-${teamPair[1]}`
+                match: `${teamPair[0]}-${teamPair[1]}`,
+                league: "ernyanuus7tdszx"
             })
         })
     }

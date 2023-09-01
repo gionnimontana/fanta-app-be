@@ -163,12 +163,6 @@ const writeSquads = async (squads, players) => {
     const resultsSquads = []
     for (let s of squads) {
         for (let p of s.players) {
-            const targetPlayer = players.find(el => el.id === p)
-            const record = {
-                team: s.id,
-                player: p,
-                price: targetPlayer?.fvm || 0,
-            }
             const r = await aR.patchPB({fanta_team: s.id}, 'collections/players_stats/records/' + p)
             resultsPurchases.push(r)
         }
@@ -207,10 +201,14 @@ const writeTeamScore = async (teamId, score) => {
     return await updateTeam(teamId, {score})
 }
 
-const writePurchase = async (playerID, squadID) => {
+const writePurchase = async (playerID, fromsquad, tosquad, price, maxprice) => {
     const requestRaw = await aR.postPB({
-        player: playerID, 
-        team: squadID
+        player: playerID,
+        from_team: fromsquad,
+        to_team: tosquad,
+        price: price,
+        max_price: maxprice,
+        league: 'ernyanuus7tdszx',
     }, 'collections/purchases/records')
 
     return requestRaw
@@ -236,7 +234,8 @@ const writeArticle = async (day, title, content, category) => {
             day,
             title,
             content,
-            category
+            category,
+            league: "ernyanuus7tdszx"
         }, 'collections/articles/records')
         return res
     }
