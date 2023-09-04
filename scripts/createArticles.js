@@ -17,7 +17,7 @@ const writeMainDayArticle = async (day, ended) => {
         return ({
             home,
             away,
-            score: ended ? JSON.parse(el.result)?.score : undefined
+            score: ended ? el.result?.score : undefined
         })
     })
     const squadMap = allSquads.reduce((acc, el) => {
