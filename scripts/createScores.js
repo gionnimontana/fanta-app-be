@@ -120,8 +120,8 @@ const allAutomated = async () => {
     const matchDayInProgess = h.isMatchDayInProgess(schedule)
     const matchDayEndedLessThanADayAgo = h.isMatchDayEndedLessThanADayAgo(schedule)
     if (matchDayInProgess || matchDayEndedLessThanADayAgo) {
-        console.log('@@@CONDITIONAL-SCRIPT@@@ - calculateMatchesScoresByDay:', matchDayInProgess.day || matchDayEndedLessThanADayAgo.day)
-        return await calculateMatchesScoresByDay(matchDayInProgess.day || matchDayEndedLessThanADayAgo.day)
+        console.log('@@@CONDITIONAL-SCRIPT@@@ - calculateMatchesScoresByDay:', matchDayInProgess?.day || matchDayEndedLessThanADayAgo.day)
+        return await calculateMatchesScoresByDay(matchDayInProgess?.day || matchDayEndedLessThanADayAgo.day)
     } else {
         console.log('@@@CONDITIONAL-SCRIPT@@@ - calculateMatchesScoresByDay: NO RUN')
     }

@@ -5,7 +5,7 @@ const h = require('../helpers/index')
 const calculateTeamRanking = async (teamId) => {
     const matches = await aRC.getAllTeamMatches(teamId)
     const dailyScore = matches.reduce((acc, m) => {
-        const result = JSON.parse(m.result)
+        const result = m.result
         const isHome = m.match.split('-')[0] === teamId
         const votes = isHome ? result.home : result.away
         const votesSum = Object.values(votes).reduce((acc, v) => acc + v, 0) 
