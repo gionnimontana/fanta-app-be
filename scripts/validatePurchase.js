@@ -23,9 +23,13 @@ const validateAll = async () => {
   const purchases = await aRC.getAllOpenPurchases()
     const squads = await aRC.getAllSquads()
     for (const purchase of purchases) {
-        const fromTeam = squads.find(s => s.id === purchase.from_team)
-        const toTeam = squads.find(s => s.id === purchase.to_team)
-        await validatePurchaseUnsafe(purchase, fromTeam, toTeam)
+        if (purchase.validated) {
+          const fromTeam = squads.find(s => s.id === purchase.from_team)
+          const toTeam = squads.find(s => s.id === purchase.to_team)
+          await validatePurchaseUnsafe(purchase, fromTeam, toTeam)
+        } else {
+          await aRC.deletePurchase(purchase.id)
+        }
     }
 }
 

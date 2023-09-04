@@ -195,6 +195,11 @@ const deleteTeamPlayer = async (id) => {
     return requestRaw
 }
 
+const deletePurchase = async (id) => {
+    const requestRaw = await aR.deletePB('collections/purchases/records/' + id)
+    return requestRaw
+}
+
 const getAllTeamMatches = async (teamId) => {
     console.log('match from teamId', teamId)
     const result = await aR.pb.collection('calendar').getList(1, 40, {
@@ -323,6 +328,7 @@ module.exports = {
     updateTeam: updateTeam,
     updatePlayer: updatePlayer,
     updatePurchase: updatePurchase,
+    deletePurchase: deletePurchase,
     deleteTeamPlayer: deleteTeamPlayer,
     deletePlayer: deletePlayer,
     deleteVote: deleteVote,
