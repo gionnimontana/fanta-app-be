@@ -1,3 +1,16 @@
+const getCurrentMatchDay = (matchDayTimestamps) => {
+    const nowTS = new Date().getTime()
+    let matchDayIndex = 0
+    for (let i = 0; i <= matchDayTimestamps.length; i++) {
+        const endTS = new Date(matchDayTimestamps[i]?.end).getTime()
+        if (nowTS < endTS) {
+            matchDayIndex = i
+            break
+        }
+    }
+    return matchDayTimestamps[matchDayIndex]
+}
+
 const isMatchDayInProgess = (schedule) => {
     const nowTS = new Date().getTime()
     return schedule.find(s => {
@@ -17,6 +30,7 @@ const isMatchDayEndedLessThanADayAgo = (schedule) => {
 })}
 
 module.exports = {
+    getCurrentMatchDay: getCurrentMatchDay,
     isMatchDayInProgess: isMatchDayInProgess,
     isMatchDayEndedLessThanADayAgo: isMatchDayEndedLessThanADayAgo
 }

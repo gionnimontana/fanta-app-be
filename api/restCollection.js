@@ -294,6 +294,13 @@ const getAllOpenPurchases = async () => {
     return requestRaw.items
 }
 
+const getAllOpeValidatedPurchases = async () => {
+    const result = await aR.pb.collection('purchases').getList(1, 500, {
+        filter: `(closed=false && validated=true)`
+    });
+    return result
+}
+
 module.exports = {
     getAllPlayers: getAllPlayers,
     getSinglePlayer: getSinglePlayer,
@@ -302,6 +309,7 @@ module.exports = {
     getSinglePurchase: getSinglePurchase,
     getAllPurchases: getAllPurchases,
     getAllOpenPurchases: getAllOpenPurchases,
+    getAllOpeValidatedPurchases, getAllOpeValidatedPurchases,
     getAllVotes: getAllVotes,
     getArticleByDay: getArticleByDay,
     getVotesByDay: getVotesByDay,
