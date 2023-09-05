@@ -46,7 +46,7 @@ const calculateFormVotes = (form, votesMap, rolesMap) => {
         acc[playerId] = votesMap[playerId]
         return acc
     }, {})
-    const unVotedPlayers = Object.keys(votes).filter(v => !votesMap[v])
+    const unVotedPlayers = Object.keys(votes).filter(v => !votes[v])
     if (unVotedPlayers.length === 0) return votes
     let subCount = 0
     const benchers = {
@@ -64,9 +64,37 @@ const calculateFormVotes = (form, votesMap, rolesMap) => {
             votes[benchPlayerId] = votesMap[benchPlayerId]
             benchers[role].shift()
             subCount++
-        } 
+        } else {
+            const currentOccupiedRoles = Object.keys(votes).map(id => votesMap[id] && rolesMap[id])
+            const addableRoles = getAddableRole(currentOccupiedRoles, role)
+            if (addableRoles.length > 0) {
+                const target = benchers[addableRoles[0]][0] || benchers[addableRoles[1]][0]
+                if (target) {
+                    const targetRole = rolesMap[target]
+                    benchers[targetRole].shift()
+                    votes[target] = votesMap[target]
+                    subCount++
+                }
+            }
+        }
     })
     return votes
+}
+
+const getAddableRole = (currentRoles, currentMissing) => {
+    const addableRoles = []
+    const numberA = currentRoles.filter(r => r === 'a').length
+    const numberC = currentRoles.filter(r => r === 'c').length
+    const numberD = currentRoles.filter(r => r === 'd').length
+    const condA = (numberA < 3 && (numberC + numberD) <= 7) || (numberA < 2 && (numberC + numberD) <= 8)
+    const condC = (numberC < 6 && (numberD + numberA) <= 4) || (numberC < 5 && (numberD + numberA) <= 5) 
+        || (numberC < 4 && (numberD + numberA) <= 6) || (numberC < 3 && (numberD + numberA) <= 7)
+    const condD = (numberD < 5 && (numberC + numberA) <= 5) || (numberD < 4 && (numberC + numberA) <= 6)
+        || (numberD < 3 && (numberC + numberA) <= 7)
+    if (condA) addableRoles.push('a')
+    if (condC) addableRoles.push('c')
+    if (condD) addableRoles.push('d')
+    return addableRoles.filter(r => r !== currentMissing)
 }
 
 const calculateScore = (votes) => {
