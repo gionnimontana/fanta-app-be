@@ -22,11 +22,11 @@ const main = async () => {
     // await statsScraper.allAutomated()
     // await titolaritaScraper.run()
     
-    // await loadAutoFormation.single("fmfnbk3o5cmq5e2",4)
+    // await loadAutoFormation.allAutomated()
     // await createScores.allAutomated()
     // await createRanking.all()
     // await createAritcle.allAutomated()
-    await validatePurchase.allAutomated()
+    // await validatePurchase.allAutomated()
 }
 
 main()

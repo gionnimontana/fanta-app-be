@@ -74,7 +74,8 @@ async function patchPB(data, url) {
 		},
 		body: JSON.stringify(data)
 	})
-	return await result.json()
+	const res = await result.json()
+	return res
 }
 
 module.exports = {

@@ -1,5 +1,6 @@
 const aRC = require('../api/restCollection')
 const u = require('./utils')
+const h = require('../helpers')
 
 const buildFormation = (sortedRoster) => {
     const goalKeepers =  sortedRoster.filter(el => el.role === 'p')
@@ -28,7 +29,7 @@ const buildFormation = (sortedRoster) => {
       if (el.role === 'c' && midFielders.length < maxMidfielders) midFielders.push(el) 
       if (el.role === 'd' && defenders.length < 5) defenders.push(el)
       x++
-      if (x > 25) break
+      if (x > sortedRoster.length) break
     }
     const starters = [goalKeepers[0], ...defenders, ...midFielders, ...strikers]
     const startersId = starters.map(el => el.id)
@@ -38,7 +39,7 @@ const buildFormation = (sortedRoster) => {
     }, [])
     return {
       s: startersId,
-      b: [goalKeepers[1].id, goalKeepers[2].id, ...benchers],
+      b: [goalKeepers[1].id, ...benchers],
       m: `${defenders.length}${midFielders.length}${strikers.length}`
     }
   }
@@ -64,13 +65,18 @@ const writeTeamFormation = async (team, match, formation) => {
   return results
 }
 
-const loadSingleAutoFormation = async (teamId, day) => {
-    const team = await aRC.getSingleSquad(teamId)
+const loadSingleAutoFormation = async (team, day, purchases) => {
+    const teamId = team.id
+    const targetMatch = await aRC.getMatchByDayAndTeam(day, teamId)
     const teamPlayers = await aRC.getTeamPlayers(teamId)
-    const playersFormData = getPlayersFormData(teamPlayers)
+
+    const needFormation = await teamNeedFormationUpdate(team, targetMatch, purchases)
+    if (!needFormation) return `loadformation NO RUN for team ${team.name}`
+
+    const nonLeavingPlayers = getNonLeavingPlayers(teamPlayers, purchases)
+    const playersFormData = getPlayersFormData(nonLeavingPlayers)
     const sortedRoster = playersFormData.sort((a, b) => b.fux - a.fux)
     const formation = buildFormation(sortedRoster)
-    const targetMatch = await aRC.getMatchByDayAndTeam(day, teamId)
     const results = await writeTeamFormation(team, targetMatch, formation)
 
     // reduce rate limit on multiple requests (max 10 req/sec)
@@ -79,38 +85,51 @@ const loadSingleAutoFormation = async (teamId, day) => {
     return results
 }
 
-const loadAllTeamsFormationsByDay = async (day) => {
-  const teams = await aRC.getAllSquads()
-  const results = []
-  for (const t of teams) {
-    if (t.auto_formation) {
-      const res = await loadSingleAutoFormation(t.id, day)
-      results.push(res)
-    }
-  }
-  return results
+const teamNeedFormationUpdate = async (team, targetMatch, purchases) => {
+  if (team.auto_formation) return true
+  const formation = await getTargetTeamFormation(team, targetMatch)
+  if (!formation) return true
+  const teamLeavingPlayers = purchases.filter(p => p.from_team === team.id)
+  const haveLeavingPlayers = await formationHaveLeavingPlayers(formation, teamLeavingPlayers)
+  return haveLeavingPlayers
 }
 
-const getCurrentMatchDay = (matchDayTimestamps) => {
-  const nowTS = new Date().getTime()
-  let matchDayIndex = 0
-  for (let i = 0; i <= matchDayTimestamps.length; i++) {
-      const endTS = new Date(matchDayTimestamps[i]?.end).getTime()
-      if (nowTS < endTS) {
-          matchDay = i
-          break
-      }
+const getTargetTeamFormation = async (team, match) => {
+  const isHome = match?.match.split('-') === team.id
+  if (isHome) return match.home_form
+  return match.away_form
+}
+
+const formationHaveLeavingPlayers = async (formation, leavingPlayers) => {
+  const leavingPlayersIds = leavingPlayers.map(lp => lp.player)
+  const allPlayersIds = [...formation.b, ...formation.s]
+  const target = Boolean(allPlayersIds.find(p => leavingPlayersIds.includes(p)))
+    return target
+}
+
+const getNonLeavingPlayers = (teamPlayers, purchases) => {
+  const leavingPlayersIds = purchases.map(p => p.player)
+  const filteredPlayers = teamPlayers.filter(p => !leavingPlayersIds.includes(p.id))
+  return filteredPlayers
+}
+
+const loadAllTeamsFormationsByDay = async (day) => {
+  const teams = await aRC.getAllSquads()
+  const openValidPurchases = await aRC.getAllOpeValidatedPurchases()
+  const results = []
+  for (const t of teams) {
+    const res = await loadSingleAutoFormation(t, day, openValidPurchases.items)
+    results.push(res)
   }
-  return matchDayTimestamps[matchDayIndex]
 }
 
 const allAutomated = async () => {
   const schedule = await aRC.getSortedSchedule()
   const nowTS = new Date().getTime()
-  const currentMatch = getCurrentMatchDay(schedule)
+  const currentMatch = h.getCurrentMatchDay(schedule)
   const matchDayHasStarted = new Date(currentMatch.start).getTime() < nowTS
   if (!matchDayHasStarted) {
-      console.log('@@@CONDITIONAL-SCRIPT@@@ - loadAllTeamsFormationsByDay:', matchDayEndedLessThanADayAgo.day)
+      console.log('@@@CONDITIONAL-SCRIPT@@@ - loadAllTeamsFormationsByDay:', currentMatch.day)
       return await loadAllTeamsFormationsByDay(currentMatch.day)
   } else {
     console.log('@@@CONDITIONAL-SCRIPT@@@ - loadAllTeamsFormationsByDay: NO RUN')
