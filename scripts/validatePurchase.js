@@ -19,8 +19,7 @@ const validateAllMaturePurchases = async () => {
     await validateAll(maturePurchases)
 }
 
-const validateAll = async () => {
-  const purchases = await aRC.getAllOpenPurchases()
+const validateAll = async (purchases) => {
     const squads = await aRC.getAllSquads()
     for (const purchase of purchases) {
         if (purchase.validated) {
@@ -42,14 +41,18 @@ const validatePurchaseUnsafe = async (purchase, fromTeam, toTeam) => {
     await aRC.updateTeam(fromTeam.id, {credits: fromTeamCredits})
   }
   if (toTeam) {
-    await aRC.writeTeamPlayer(toTeam.id, purchase.player, leagueID)
+    await aRC.writeTeamPlayer(toTeam?.id, purchase.player, leagueID)
     const toTeamCredits = toTeam.credits - purchase.price
     await aRC.updateTeam(toTeam.id, {credits: toTeamCredits})
+  } else {
+    const targetTeamPlayer = await aRC.getTeamPlayerByLeagueAndPlayerId(leagueID, purchase.player)
+    if (targetTeamPlayer) await aRC.deleteTeamPlayer(targetTeamPlayer.id)
   }
   await aRC.updatePurchase(purchase.id, {closed: true})
 }
 
 const allAutomated = async () => {
+  const schedule = await aRC.getSortedSchedule()
   const matchDayInProgess = h.isMatchDayInProgess(schedule)
   if (matchDayInProgess) {
     console.log('@@@CONDITIONAL-SCRIPT@@@ - auto validatePurchase: NO RUN')
