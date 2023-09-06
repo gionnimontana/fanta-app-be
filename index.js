@@ -26,7 +26,7 @@ const main = async () => {
     // await createScores.allAutomated()
     // await createRanking.all()
     // await createAritcle.allAutomated()
-    // await validatePurchase.allAutomated()
+    await validatePurchase.singleById("1rm16p6ty4qv667")
 }
 
 main()

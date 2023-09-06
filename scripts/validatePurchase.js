@@ -41,7 +41,7 @@ const validatePurchaseUnsafe = async (purchase, fromTeam, toTeam) => {
     await aRC.updateTeam(fromTeam.id, {credits: fromTeamCredits})
   }
   if (toTeam) {
-    await aRC.writeTeamPlayer(toTeam?.id, purchase.player, leagueID)
+    // await aRC.writeTeamPlayer(toTeam?.id, purchase.player, leagueID)
     const toTeamCredits = toTeam.credits - purchase.price
     await aRC.updateTeam(toTeam.id, {credits: toTeamCredits})
   } else {

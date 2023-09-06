@@ -17,8 +17,8 @@ const main = async () => {
     await titolaritaScraper.run()
     
     // conditionally executed
-    await validatePurchase.allAutomated()
-    await utils.sleep(2000)
+    // await validatePurchase.allAutomated()
+    // await utils.sleep(2000)
     await loadAutoFormation.allAutomated()
     await utils.sleep(2000)
     await statsScraper.allAutomated()
