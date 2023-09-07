@@ -20,34 +20,30 @@ const validateAllMaturePurchases = async () => {
 }
 
 const validateAll = async (purchases) => {
-    const squads = await aRC.getAllSquads()
     for (const purchase of purchases) {
         if (purchase.validated) {
-          const fromTeam = squads.find(s => s.id === purchase.from_team)
-          const toTeam = squads.find(s => s.id === purchase.to_team)
-          await validatePurchaseUnsafe(purchase, fromTeam, toTeam)
+          await validatePurchaseUnsafe(purchase)
         } else {
           await aRC.deletePurchase(purchase.id)
         }
     }
 }
 
-const validatePurchaseUnsafe = async (purchase, fromTeam, toTeam) => {
+const validatePurchaseUnsafe = async (purchase) => {
   const leagueID = "ernyanuus7tdszx"
-  if (fromTeam) {
-    const teamPlayerId = await aRC.getTeamPlayerByLeagueAndPlayerId(leagueID, purchase.player)
-    if (teamPlayerId) await aRC.deleteTeamPlayer(teamPlayerId)
-    const fromTeamCredits = fromTeam.credits + purchase.price
-    await aRC.updateTeam(fromTeam.id, {credits: fromTeamCredits})
+  if (purchase.from_team) {
+    const teamPlayer = await aRC.getTeamPlayerByLeagueAndPlayerId(leagueID, purchase.player)
+    const ft = await aRC.getSingleSquad(purchase.from_team)
+    const fromTeamCredits = ft.credits + purchase.price
+  if (teamPlayer) await aRC.deleteTeamPlayer(teamPlayer.id)
+    await aRC.updateTeam(purchase.from_team, {credits: fromTeamCredits})
   }
-  if (toTeam) {
-    // await aRC.writeTeamPlayer(toTeam?.id, purchase.player, leagueID)
-    const toTeamCredits = toTeam.credits - purchase.price
+  if (purchase.to_team) {
+    const tt = await aRC.getSingleSquad(purchase.to_team)
+    const toTeamCredits = tt.credits - purchase.price
+    await aRC.writeTeamPlayer(toTeam?.id, purchase.player, leagueID)
     await aRC.updateTeam(toTeam.id, {credits: toTeamCredits})
-  } else {
-    const targetTeamPlayer = await aRC.getTeamPlayerByLeagueAndPlayerId(leagueID, purchase.player)
-    if (targetTeamPlayer) await aRC.deleteTeamPlayer(targetTeamPlayer.id)
-  }
+  } 
   await aRC.updatePurchase(purchase.id, {closed: true})
 }
 
