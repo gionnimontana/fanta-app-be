@@ -215,6 +215,13 @@ const getSortedSchedule = async () => {
     return result.items
 }
 
+const getScheduleByMatchDay = async (day) => {
+    const result = await aR.pb.collection('schedules').getList(1, 40, {
+        filter: `(day='${day}')`
+    });
+    return result.items[0] || null
+}
+
 const writeTeamScore = async (teamId, score) => {
     return await updateTeam(teamId, {score})
 }
@@ -294,7 +301,7 @@ const getAllOpenPurchases = async () => {
     return requestRaw.items
 }
 
-const getAllOpeValidatedPurchases = async () => {
+const getAllOpenValidatedPurchases = async () => {
     const result = await aR.pb.collection('purchases').getList(1, 500, {
         filter: `(closed=false && validated=true)`
     });
@@ -309,7 +316,7 @@ module.exports = {
     getSinglePurchase: getSinglePurchase,
     getAllPurchases: getAllPurchases,
     getAllOpenPurchases: getAllOpenPurchases,
-    getAllOpeValidatedPurchases, getAllOpeValidatedPurchases,
+    getAllOpenValidatedPurchases, getAllOpenValidatedPurchases,
     getAllVotes: getAllVotes,
     getArticleByDay: getArticleByDay,
     getVotesByDay: getVotesByDay,
@@ -323,6 +330,7 @@ module.exports = {
     getTeamPlayers: getTeamPlayers,
     getTeamPlayerByLeagueAndPlayerId: getTeamPlayerByLeagueAndPlayerId,
     getSortedSchedule: getSortedSchedule,
+    getScheduleByMatchDay: getScheduleByMatchDay,
     writeArticle: writeArticle,
     writePlayer: writePlayer,
     writePlayers: writePlayers,

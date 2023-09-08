@@ -115,7 +115,7 @@ const getNonLeavingPlayers = (teamPlayers, purchases) => {
 
 const loadAllTeamsFormationsByDay = async (day) => {
   const teams = await aRC.getAllSquads()
-  const openValidPurchases = await aRC.getAllOpeValidatedPurchases()
+  const openValidPurchases = await aRC.getAllOpenValidatedPurchases()
   const results = []
   for (const t of teams) {
     const res = await loadSingleAutoFormation(t, day, openValidPurchases.items)
@@ -125,9 +125,8 @@ const loadAllTeamsFormationsByDay = async (day) => {
 
 const allAutomated = async () => {
   const schedule = await aRC.getSortedSchedule()
-  const nowTS = new Date().getTime()
   const currentMatch = h.getCurrentMatchDay(schedule)
-  const matchDayHasStarted = new Date(currentMatch.start).getTime() < nowTS
+  const matchDayHasStarted = h.isMatchDayStarted(currentMatch.start)
   if (!matchDayHasStarted) {
       console.log('@@@CONDITIONAL-SCRIPT@@@ - loadAllTeamsFormationsByDay:', currentMatch.day)
       return await loadAllTeamsFormationsByDay(currentMatch.day)
@@ -136,8 +135,44 @@ const allAutomated = async () => {
   }
 }
 
+const singleByTeamAndDay = async (teamId, day, formation) => {
+  if (!teamId) throw new Error('Invalid team id')
+  if (!day) throw new Error('Invalid match day')
+
+  const formationError = checkFormationErrors(formation)
+  if (formationError) throw new Error(formationError)
+
+  const schedule = await aRC.getScheduleByMatchDay(day)
+  if (!schedule) throw new Error('Invalid match day')
+
+  const matchDayHasStarted = h.isMatchDayStarted(schedule)
+  if (matchDayHasStarted) throw new Error('Match day has started, formation cannot be changed')
+  
+  const match = await aRC.getMatchByDayAndTeam(day, teamId)
+  const team = await aRC.getSingleSquad(teamId)
+  const results = await writeTeamFormation(team, match, formation)
+  return true
+}
+
+const checkFormationErrors = (formation) => {
+  if (!formation || typeof formation !== 'object') return false
+  const starters = formation.s || []
+  const benchers = formation.b || []
+  const allPlayers = [...starters, ...benchers]
+
+  const allPlayersUnique = [...new Set(allPlayers)]
+  if (allPlayersUnique.length !== allPlayers.length) return 'Invalid formation: duplicate players'
+  
+  const haveElevenStarterPlayers = starters.length === 11
+  if (!haveElevenStarterPlayers) return 'Invalid formation: must have 11 starters'
+  
+  return false
+}
+
+
 module.exports = {
     byDay: loadAllTeamsFormationsByDay,
-    single: loadSingleAutoFormation,
+    singleAuto: loadSingleAutoFormation,
+    singleByTeamAndDay: singleByTeamAndDay,
     allAutomated: allAutomated
 }

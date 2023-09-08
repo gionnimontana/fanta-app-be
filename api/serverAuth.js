@@ -1,22 +1,39 @@
 const u = require('./utils')
 const apiUrl = process.env.PB_URL + '/api/'
 
-const getUserData = async (userID, userToken) => {
-	const completeUrl = apiUrl + 'collections/users/records/' + userID
-  let data = null
+const getAuthenticatedSquad = async (req, res) => {
   try {
+  const body = req.body
+  const userID = body.userID
+  const userToken = req.headers.authorization
+
+	const completeUrl = apiUrl + 'collections/users/records/' + userID
+
+  let user = null
     const res = await u.fetch(completeUrl, {
         headers: {
                 authorization: 'Bearer ' + userToken
             }
     })
-    data = await res.json()
+    user = await res.json()
+
+    if (!user?.team) throw new Error('Invalid token, no team found for user ' + userID)
+
+    return user.team
+
   } catch (e) {
-    console.log('@@@ Error in getUserData', e)
+    res.status(401).send(e.message)
+    return null
   }
-  return data
+
+}
+
+const safeServerResponse = (res, data) => {
+  if (res.statusCode > 300) return
+  res.send(JSON.stringify({...data, ok: true }))
 }
 
 module.exports = {
-	getUserData: getUserData
+	getAuthenticatedSquad: getAuthenticatedSquad,
+  safeServerResponse: safeServerResponse
 }
