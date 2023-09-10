@@ -59,9 +59,19 @@ const writeTeamFormation = async (team, match, formation) => {
   const isHomeTeam = teamsIds[0] === team.id
   const isAwayTeam = teamsIds[1] === team.id
   let values = {}
-  if (isHomeTeam) values.home_form = formation
-  if (isAwayTeam) values.away_form = formation
-  const results = await aRC.updateMatch(match.id, values)
+  let currentValues = {}
+  if (isHomeTeam) {
+    values.home_form = formation
+    currentValues = match.home_form
+  }
+  if (isAwayTeam) {
+    values.away_form = formation
+    currentValues = match.away_form
+  }
+  let results = null
+  const areDiff = JSON.stringify(currentValues?.s || []) !== JSON.stringify(formation?.s || []) ||
+    JSON.stringify(currentValues?.b || []) !== JSON.stringify(formation?.b || []) 
+  if (areDiff) results = await aRC.updateMatch(match.id, values)
   return results
 }
 

@@ -29,8 +29,10 @@ const getAuthenticatedSquad = async (req, res) => {
 }
 
 const safeServerResponse = (res, data) => {
-  if (res.statusCode > 300) return
-  res.send(JSON.stringify({...data, ok: true }))
+  try {
+    if (res.statusCode > 300) return
+    res.send(JSON.stringify({...data, ok: true }))
+  } catch (e) {}
 }
 
 module.exports = {
