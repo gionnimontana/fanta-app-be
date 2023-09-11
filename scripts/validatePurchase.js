@@ -78,11 +78,22 @@ const deletePurchaseOffer = async (id, teamId) => {
   await aRC.deletePurchase(id)
 }
 
+const updatePurchaseOffer = async (teamId, purchase_id, price, maxPrice) => {
+  const purchase = await aRC.getSinglePurchase(purchase_id)
+  if (!purchase) throw new Error('invalid purchase')
+  const isPriceValid = teamId === purchase.to_team ? price >= purchase.price : price >= purchase.max_price
+  if (!isPriceValid) throw new Error('invalid price')
+  const isMaxPriceValid = maxPrice >= price
+  if (!isMaxPriceValid) throw new Error('invalid max price')
+  await aRC.updatePurchase(purchase_id, {to_team: teamId, price: price, max_price: maxPrice})
+}
+
 
 module.exports = {
     singleById: singleById,
     all: validateAll,
     allAutomated: allAutomated,
     createPurchaseOffer: createPurchaseOffer,
-    deletePurchaseOffer: deletePurchaseOffer
+    deletePurchaseOffer: deletePurchaseOffer,
+    updatePurchaseOffer: updatePurchaseOffer
 }
