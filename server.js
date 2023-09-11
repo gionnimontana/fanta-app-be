@@ -32,3 +32,9 @@ app.post('/purchase_offer', async (req, res) => {
   await sa.sfc(res, () => purchaseScript.createPurchaseOffer(leagueId, teamId, req.body.player, req.body.price, req.body.max_price))
   sa.safeServerResponse(res, 'purchase offer created')
 })
+
+app.post('/delete_purchase_offer', async (req, res) => {
+  const { teamId }  = await sa.getAuthenticatedSquad(req, res)
+  await sa.sfc(res, () => purchaseScript.deletePurchaseOffer(req.body.purchase_id, teamId))
+  sa.safeServerResponse(res, 'purchase offer deleted')
+})
