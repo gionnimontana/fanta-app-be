@@ -166,6 +166,11 @@ const updateTeam = async (id, values) => {
     return requestRaw
 }
 
+const updateTeamAutoFormation = async (id, auto_formation) => {
+    const requestRaw = await aR.patchPB({auto_formation}, 'collections/teams/records/' + id)
+    return requestRaw
+}
+
 const writeSquads = async (squads, players) => {
     const resultsPurchases = []
     const resultsSquads = []
@@ -342,6 +347,7 @@ module.exports = {
     writeTeamPlayer: writeTeamPlayer,
     updateMatch: updateMatch,
     updateTeam: updateTeam,
+    updateTeamAutoFormation: updateTeamAutoFormation,
     updatePlayer: updatePlayer,
     updatePurchase: updatePurchase,
     deletePurchase: deletePurchase,

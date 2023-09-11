@@ -4,6 +4,7 @@ const cors = require('cors')
 const bodyParser = require('body-parser')
 const sa = require('./api/serverAuth')
 const formationScript = require('./scripts/createFormations')
+const aRC = require('./api/restCollection')
 
 const app = express()
 const port = 8085
@@ -17,4 +18,10 @@ app.post('/update_match_formation', async (req, res) => {
   const teamId = await sa.getAuthenticatedSquad(req, res)
   await sa.sfc(() => formationScript.singleByTeamAndDay(teamId, req.body.day, req.body.formation))
   sa.safeServerResponse(res, 'formation updated')
+})
+
+app.post('/update_team_autoformation', async (req, res) => {
+  const teamId = await sa.getAuthenticatedSquad(req, res)
+  await sa.sfc(() => aRC.updateTeamAutoFormation(teamId, req.body.auto_formation))
+  sa.safeServerResponse(res, 'team auto formation updated')
 })
