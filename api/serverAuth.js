@@ -19,7 +19,10 @@ const getAuthenticatedSquad = async (req, res) => {
 
     if (!user?.team) throw new Error('Invalid token, no team found for user ' + userID)
 
-    return user.team
+    return {
+      teamId: user.team, 
+      leagueId: user.league
+    }
 
   } catch (e) {
     res.status(401).send(e.message)
@@ -35,7 +38,7 @@ const safeServerResponse = (res, data) => {
   } catch (e) {}
 }
 
-const safeFunctionCaller = async (func, feedback) => {
+const safeFunctionCaller = async (res, func) => {
   try {
     await func()
   } catch (e) {

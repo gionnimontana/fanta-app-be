@@ -58,9 +58,23 @@ const allAutomated = async () => {
   return await validateAllMaturePurchases()
 }
 
+const createPurchaseOffer = async (leagueId, teamId, playerId, price, maxPrice) => {
+  const player = await aRC.getSinglePlayer(playerId)
+  if (!player) throw new Error('invalid player')
+  const isPriceValid = price >= player.fvm
+  if (!isPriceValid) throw new Error('invalid price')
+  const isMaxPriceValid = maxPrice >= price
+  if (!isMaxPriceValid) throw new Error('invalid max price')
+  const currentPurchase = await aRC.getPurchaseByLeagueAndPlayerId(leagueId, playerId)
+  if (currentPurchase) throw new Error('player already on sale')
+  const playerTeam = await aRC.getTeamPlayerByLeagueAndPlayerId(leagueId, playerId)
+  await aRC.writePurchase(leagueId, playerId, playerTeam?.team, teamId, price, maxPrice)
+}
+
 
 module.exports = {
     singleById: singleById,
     all: validateAll,
-    allAutomated: allAutomated
+    allAutomated: allAutomated,
+    createPurchaseOffer: createPurchaseOffer
 }

@@ -8,8 +8,8 @@ const getAllPlayers = async () => {
 }
 
 const getSinglePlayer = async (id) => {
-    const requestRaw = await aR.getPB('collections/players_stats/records/' + id)
-    return requestRaw.items
+    const request = await aR.getPB('collections/players_stats/records/' + id)
+    return request
 }
 
 const getPlayersByIds = async (ids) => {
@@ -231,14 +231,15 @@ const writeTeamScore = async (teamId, score) => {
     return await updateTeam(teamId, {score})
 }
 
-const writePurchase = async (playerID, fromsquad, tosquad, price, maxprice) => {
+const writePurchase = async (leagueId, playerID, fromsquad, tosquad, price, maxprice) => {
     const requestRaw = await aR.postPB({
         player: playerID,
         from_team: fromsquad,
         to_team: tosquad,
         price: price,
         max_price: maxprice,
-        league: 'ernyanuus7tdszx',
+        league: leagueId,
+        validated: fromsquad ? false : true,
     }, 'collections/purchases/records')
 
     return requestRaw
@@ -286,6 +287,13 @@ const getPurchaseByTeam = async (teamId) => {
     return requestRaw.items
 }
 
+const getPurchaseByLeagueAndPlayerId = async (leagueId, playerId) => {
+    const requestRaw = await aR.pb.collection('purchases').getList(1, 40, {
+        filter: `(player='${playerId}' && league='${leagueId}')`
+    });
+    return requestRaw.items[0] || null
+}
+
 const getSinglePurchase = async (id) => {
     const requestRaw = await aR.getPB('collections/purchases/records/' + id )
     return requestRaw
@@ -321,6 +329,7 @@ module.exports = {
     getSinglePurchase: getSinglePurchase,
     getAllPurchases: getAllPurchases,
     getAllOpenPurchases: getAllOpenPurchases,
+    getPurchaseByLeagueAndPlayerId: getPurchaseByLeagueAndPlayerId,
     getAllOpenValidatedPurchases, getAllOpenValidatedPurchases,
     getAllVotes: getAllVotes,
     getArticleByDay: getArticleByDay,
