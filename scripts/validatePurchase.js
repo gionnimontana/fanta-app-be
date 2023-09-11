@@ -74,6 +74,7 @@ const createPurchaseOffer = async (leagueId, teamId, playerId, price, maxPrice) 
 const deletePurchaseOffer = async (id, teamId) => {
   const purchase = await aRC.getSinglePurchase(id)
   if (!purchase) throw new Error('invalid purchase')
+  if (purchase.validated) throw new Error('purchase already accepted')
   if (purchase.from_team !== teamId) throw new Error('invalid team')
   await aRC.deletePurchase(id)
 }
@@ -88,6 +89,13 @@ const updatePurchaseOffer = async (teamId, purchase_id, price, maxPrice) => {
   await aRC.updatePurchase(purchase_id, {to_team: teamId, price: price, max_price: maxPrice})
 }
 
+const acceptPurchaseOffer = async (purchase_id, teamId) => {
+  const purchase = await aRC.getSinglePurchase(purchase_id)
+  if (!purchase) throw new Error('invalid purchase')
+  if (purchase.from_team !== teamId) throw new Error('invalid team')
+  await aRC.updatePurchase(purchase_id, {validated: true})
+}
+
 
 module.exports = {
     singleById: singleById,
@@ -95,5 +103,6 @@ module.exports = {
     allAutomated: allAutomated,
     createPurchaseOffer: createPurchaseOffer,
     deletePurchaseOffer: deletePurchaseOffer,
-    updatePurchaseOffer: updatePurchaseOffer
+    updatePurchaseOffer: updatePurchaseOffer,
+    acceptPurchaseOffer: acceptPurchaseOffer
 }
