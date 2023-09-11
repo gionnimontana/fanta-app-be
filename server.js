@@ -15,11 +15,6 @@ app.listen(port, () => { console.log(`Fantabot editing endpoint listening on por
 
 app.post('/update_match_formation', async (req, res) => {
   const teamId = await sa.getAuthenticatedSquad(req, res)
-  let feedback = 'formation updated'
-  try {
-    await formationScript.singleByTeamAndDay(teamId, req.body.day, req.body.formation)
-  } catch (e) {
-    res.status(400).send(e.message)
-  }
-  sa.safeServerResponse(res, feedback)
+  await sa.sfc(() => formationScript.singleByTeamAndDay(teamId, req.body.day, req.body.formation))
+  sa.safeServerResponse(res, 'formation updated')
 })

@@ -31,11 +31,20 @@ const getAuthenticatedSquad = async (req, res) => {
 const safeServerResponse = (res, data) => {
   try {
     if (res.statusCode > 300) return
-    res.send(JSON.stringify({...data, ok: true }))
+    res.send(JSON.stringify({data, ok: true }))
   } catch (e) {}
+}
+
+const safeFunctionCaller = async (func, feedback) => {
+  try {
+    await func()
+  } catch (e) {
+    res.status(400).send(e.message)
+  }
 }
 
 module.exports = {
 	getAuthenticatedSquad: getAuthenticatedSquad,
-  safeServerResponse: safeServerResponse
+  safeServerResponse: safeServerResponse,
+  sfc: safeFunctionCaller
 }
