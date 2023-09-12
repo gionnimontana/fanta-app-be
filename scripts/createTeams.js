@@ -89,7 +89,7 @@ const startAuction = async () => {
     })
 
     console.log('auction done')
-    await aRC.writeSquads(dehidratedSquads, players)
+    await aRC.writeSquads('ernyanuus7tdszx',dehidratedSquads, players)
 }
 
 module.exports = {

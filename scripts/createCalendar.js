@@ -1,8 +1,8 @@
 const aRC = require('../api/restCollection')
 
-const createCalendar = async () => {
+const createCalendar = async (leagueId) => {
     let days = 38
-    const squads = await aRC.getAllSquads()
+    const squads = await aRC.getAllSquadsByLeague(leagueId)
     const squadIds = squads.map(s => s.id)
     const teamsPairs = createMatchCalendar(squadIds)
     const pairsNumber = teamsPairs.length
@@ -16,7 +16,7 @@ const createCalendar = async () => {
             matches.push({
                 day: day + 1,
                 match: `${teamPair[0]}-${teamPair[1]}`,
-                league: "ernyanuus7tdszx"
+                league: leagueId
             })
         })
     }

@@ -106,6 +106,12 @@ const getAllSquads = async () => {
     return requestRaw.items
 }
 
+const getAllSquadsByLeague = async (leagueId) => {
+    const urlParams = `league='${leagueId}'`
+    const requestRaw = await aR.getPB('collections/teams/records?perPage=500&filter=(' + urlParams + ')')
+    return requestRaw.items
+}
+
 const getSingleSquad = async (id) => {
     const requestRaw = await aR.getPB('collections/teams/records/' + id)
     return requestRaw
@@ -171,12 +177,12 @@ const updateTeamAutoFormation = async (id, auto_formation) => {
     return requestRaw
 }
 
-const writeSquads = async (squads, players) => {
+const writeSquads = async (league, squads, players) => {
     const resultsPurchases = []
     const resultsSquads = []
     for (let s of squads) {
         for (let p of s.players) {
-            const r = await writeTeamPlayer(s.id, p, 'ernyanuus7tdszx')
+            const r = await writeTeamPlayer(s.id, p, league)
             resultsPurchases.push(r)
         }
         const rs = await updateTeam(s.id, {credits: s.credits})
@@ -335,6 +341,7 @@ module.exports = {
     getArticleByDay: getArticleByDay,
     getVotesByDay: getVotesByDay,
     getAllSquads: getAllSquads,
+    getAllSquadsByLeague: getAllSquadsByLeague,
     getSingleSquad: getSingleSquad,
     getAllMatches: getAllMatches,
     getMatchByDay: getMatchByDay,

@@ -16,7 +16,7 @@ const main = async () => {
 
     // await cleanPBdatabase.cleanPlayerVotes()
     // await createTeams.run()
-    // await createCalendar.run()
+    await createCalendar.run('1bn2o4kzza0ufc1')
 
     // await quotsScraper.run()
     // await statsScraper.allAutomated()
