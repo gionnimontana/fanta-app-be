@@ -30,9 +30,8 @@ const validateAll = async (purchases) => {
 }
 
 const validatePurchaseUnsafe = async (purchase) => {
-  const leagueID = "ernyanuus7tdszx"
   if (purchase.from_team) {
-    const teamPlayer = await aRC.getTeamPlayerByLeagueAndPlayerId(leagueID, purchase.player)
+    const teamPlayer = await aRC.getTeamPlayerByLeagueAndPlayerId(purchase.league, purchase.player)
     const ft = await aRC.getSingleSquad(purchase.from_team)
     const fromTeamCredits = ft.credits + purchase.price
   if (teamPlayer) await aRC.deleteTeamPlayer(teamPlayer.id)
@@ -41,7 +40,7 @@ const validatePurchaseUnsafe = async (purchase) => {
   if (purchase.to_team) {
     const tt = await aRC.getSingleSquad(purchase.to_team)
     const toTeamCredits = tt.credits - purchase.price
-    await aRC.writeTeamPlayer(purchase.to_team, purchase.player, leagueID)
+    await aRC.writeTeamPlayer(purchase.to_team, purchase.player, purchase.league)
     await aRC.updateTeam(purchase.to_team, {credits: toTeamCredits})
   } 
   await aRC.updatePurchase(purchase.id, {closed: true})
