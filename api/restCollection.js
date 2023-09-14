@@ -12,13 +12,18 @@ const getSinglePlayer = async (id) => {
     return request
 }
 
+const getAllLeagues = async () => {
+    const requestRaw = await aR.getPB('collections/leagues/records?perPage=500')
+    return requestRaw.items
+}
+
 const getPlayersByIds = async (ids) => {
     const urlParams = ids.map(el => `id='${el}'`).join(' || ')
     const requestRaw = await aR.getPB('collections/players_stats/records?filter=(' + urlParams + ')')
     return requestRaw.items
 }
 
-const getTeamPlayers = async (teamId) => {
+const getTeamPlayersByTeam = async (teamId) => {
     const result = await aR.pb.collection('team_players').getList(1, 60, {
         filter: `(team='${teamId}')`,
         expand: "player"
@@ -144,6 +149,13 @@ const getTeamPlayerByLeagueAndPlayerId = async (leagueId, playerId) => {
         filter: `(player='${playerId}' && league='${leagueId}')`
     });
     return result && result.items[0]
+}
+
+const getTeamPlayersByLeague = async (leagueId) => {
+    const result = await aR.pb.collection('team_players').getList(1, 500, {
+        filter: `(league='${leagueId}')`
+    });
+    return result && result.items
 }
 
 const writeMatches = async (newMatches) => {
@@ -330,6 +342,7 @@ const getAllOpenValidatedPurchases = async () => {
 module.exports = {
     getAllPlayers: getAllPlayers,
     getSinglePlayer: getSinglePlayer,
+    getAllLeagues: getAllLeagues,
     getPlayersByIds: getPlayersByIds,
     getPurchaseByTeam: getPurchaseByTeam,
     getSinglePurchase: getSinglePurchase,
@@ -348,7 +361,8 @@ module.exports = {
     getMatchById: getMatchById,
     getMatchByDayAndTeam: getMatchByDayAndTeam,
     getAllTeamMatches: getAllTeamMatches,
-    getTeamPlayers: getTeamPlayers,
+    getTeamPlayersByTeam: getTeamPlayersByTeam,
+    getTeamPlayersByLeague: getTeamPlayersByLeague,
     getTeamPlayerByLeagueAndPlayerId: getTeamPlayerByLeagueAndPlayerId,
     getSortedSchedule: getSortedSchedule,
     getScheduleByMatchDay: getScheduleByMatchDay,

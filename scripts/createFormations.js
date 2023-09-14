@@ -78,7 +78,7 @@ const writeTeamFormation = async (team, match, formation) => {
 const loadSingleAutoFormation = async (team, day, purchases) => {
     const teamId = team.id
     const targetMatch = await aRC.getMatchByDayAndTeam(day, teamId)
-    const teamPlayers = await aRC.getTeamPlayers(teamId)
+    const teamPlayers = await aRC.getTeamPlayersByTeam(teamId)
 
     const needFormation = await teamNeedFormationUpdate(team, targetMatch, purchases)
     if (!needFormation) return `loadformation NO RUN for team ${team.name}`
