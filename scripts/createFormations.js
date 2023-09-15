@@ -86,8 +86,14 @@ const loadSingleAutoFormation = async (team, day, purchases) => {
     const nonLeavingPlayers = getNonLeavingPlayers(teamPlayers, purchases)
     const playersFormData = getPlayersFormData(nonLeavingPlayers)
     const sortedRoster = playersFormData.sort((a, b) => b.fux - a.fux)
-    const formation = buildFormation(sortedRoster)
-    const results = await writeTeamFormation(team, targetMatch, formation)
+    let formation = null
+    try {
+      formation = buildFormation(sortedRoster)
+    } catch (e) {
+      console.log(`@@@CONDITIONAL-SCRIPT@@@ - loadformation ERROR for team ${team.name}`)
+    }
+    let results = null
+    if (formation) results = await writeTeamFormation(team, targetMatch, formation)
 
     // reduce rate limit on multiple requests (max 10 req/sec)
     await u.sleep(1000)
@@ -101,7 +107,8 @@ const teamNeedFormationUpdate = async (team, targetMatch, purchases) => {
   if (!formation) return true
   const teamLeavingPlayers = purchases.filter(p => p.from_team === team.id)
   const haveLeavingPlayers = await formationHaveLeavingPlayers(formation, teamLeavingPlayers)
-  return haveLeavingPlayers
+  const haveGonePlayers = await formationHaveGonePlayers(formation, team.id)
+  return haveLeavingPlayers || haveGonePlayers
 }
 
 const getTargetTeamFormation = async (team, match) => {
@@ -115,6 +122,14 @@ const formationHaveLeavingPlayers = async (formation, leavingPlayers) => {
   const allPlayersIds = [...formation.b, ...formation.s]
   const target = Boolean(allPlayersIds.find(p => leavingPlayersIds.includes(p)))
     return target
+}
+
+const formationHaveGonePlayers = async (formation, teamId) => {
+  const allPlayersIds = [...formation.b, ...formation.s]
+  const teamPlayers = await aRC.getTeamPlayersByTeam(teamId)
+  const teamPlayersIds = teamPlayers.map(p => p.id)
+  const target = Boolean(allPlayersIds.find(p => !teamPlayersIds.includes(p)))
+  return target
 }
 
 const getNonLeavingPlayers = (teamPlayers, purchases) => {

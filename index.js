@@ -14,7 +14,7 @@ const validatePurchase = require('./scripts/validatePurchase')
 
 const main = async () => {
 
-    // await cleanPBdatabase.cleanPlayerVotes()
+    // await cleanPBdatabase.removeOutOfGamesRefoundingTeams()
     // await createTeams.run()
     // await createCalendar.run('1bn2o4kzza0ufc1')
 
@@ -22,7 +22,7 @@ const main = async () => {
     // await statsScraper.allAutomated()
     // await titolaritaScraper.run()
     
-    // await loadAutoFormation.allAutomated()
+    await loadAutoFormation.allAutomated()
     // await createScores.allAutomated()
     // await createRanking.all()
     // await createAritcle.allAutomated()
