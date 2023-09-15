@@ -22,7 +22,7 @@ const main = async () => {
     // await statsScraper.allAutomated()
     // await titolaritaScraper.run()
     
-    await loadAutoFormation.allAutomated()
+    // await loadAutoFormation.allAutomated()
     // await createScores.allAutomated()
     // await createRanking.all()
     // await createAritcle.allAutomated()
