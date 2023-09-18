@@ -77,10 +77,10 @@ const audoDayScraper = async () => {
     const matchDayInProgess = h.isMatchDayInProgess(schedule)
     const matchDayEndedLessThanADayAgo = h.isMatchDayEndedLessThanADayAgo(schedule)
     if (matchDayInProgess || matchDayEndedLessThanADayAgo) {
-        console.log('@@@CONDITIONAL-SCRAPER@@@ - Create Scores:', matchDayInProgess?.day || matchDayEndedLessThanADayAgo.day)
+        console.log('@@@CONDITIONAL-SCRAPER@@@ - Create Stats:', matchDayInProgess?.day || matchDayEndedLessThanADayAgo.day)
         return await scrapeAndWrite(matchDayInProgess?.day || matchDayEndedLessThanADayAgo.day)
     } else {
-        console.log('@@@CONDITIONAL-SCRAPER@@@ - Create Scores: NO RUN')
+        console.log('@@@CONDITIONAL-SCRAPER@@@ - Create Stats: NO RUN')
     }
 }
 

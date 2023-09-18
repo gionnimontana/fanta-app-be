@@ -5,6 +5,8 @@ const h = require('../helpers/index')
 const maxSubstitutions = 5
 
 const getAllFormPlayersIds = (form) => {
+    if (!form || !form.s) return []
+    if (!form.b) return form.s
     return [...form.s, ...form.b]
 }
 
@@ -41,7 +43,8 @@ const getPlayersRolesMap = async (allPlayersIds) => {
 
 
 const calculateFormVotes = (form, votesMap, rolesMap) => {
-    const { s, b, m } = form
+    if (!form || !form.s || !form.b) return {}
+    const { s, b } = form
     const votes = s.reduce((acc, playerId) => {
         acc[playerId] = votesMap[playerId]
         return acc
@@ -136,10 +139,11 @@ const calculateMatchScore = async (matchId) => {
 
 const calculateMatchesScoresByDay = async (day) => {
     const matches = await aRC.getMatchByDay(day)
-    const promiseArray = matches.map((m) => {
-        return calculateMatchScore(m.id)
-    })
-    const result = await Promise.all(promiseArray)
+    const result = []
+    for (const m of matches) {
+        const matchScore = await calculateMatchScore(m.id)
+        result.push(matchScore)
+    }
     return result
 }
 

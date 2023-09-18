@@ -34,13 +34,14 @@ async function getPB(url) {
 
 async function postPB(data, url) {
 	const completeUrl = apiUrl + url
+	const token = await tokenWrapper.getToken()
 	console.log('Fetching POST =========> ', completeUrl)
 	try {
 		const result = await u.fetch(completeUrl, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
-				'Authorization': await tokenWrapper.getToken()
+				'Authorization': token
 			},
 			body: JSON.stringify(data)
 		})
@@ -52,12 +53,13 @@ async function postPB(data, url) {
 
 async function deletePB(url) {
     const completeUrl = apiUrl + url
+		const token = await tokenWrapper.getToken()
     console.log('Fetching DELETE =========> ', completeUrl)
     const result = await u.fetch(completeUrl, {
         method: 'DELETE',
         headers: {
             'Content-Type': 'application/json',
-			'Authorization': await tokenWrapper.getToken()
+			'Authorization': token
         }
     })
 		return result
@@ -65,23 +67,27 @@ async function deletePB(url) {
 
 async function patchPB(data, url) {
 	const completeUrl = apiUrl + url
+	const token = await tokenWrapper.getToken()
 	console.log('Fetching PATCH =========> ', completeUrl)
-	const result = await u.fetch(completeUrl, {
-		method: 'PATCH',
-		headers: {
-			'Content-Type': 'application/json',
-			'Authorization': await tokenWrapper.getToken()
-		},
-		body: JSON.stringify(data)
-	})
-	const res = await result.json()
-	return res
+	try {
+		const result = await u.fetch(completeUrl, {
+			method: 'PATCH',
+			headers: {
+				'Content-Type': 'application/json',
+				'Authorization': token
+			},
+			body: JSON.stringify(data)
+		})
+		return await result.json()
+	} catch (error) {
+		console.log('Error in patchPB', error)
+	}
 }
 
 module.exports = {
 	postPB: postPB,
 	getPB: getPB,
-  	deletePB: deletePB,
+  deletePB: deletePB,
 	patchPB: patchPB,
 	pb: pb
 }
