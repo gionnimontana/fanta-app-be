@@ -307,7 +307,7 @@ const getPurchaseByTeam = async (teamId) => {
 
 const getPurchaseByLeagueAndPlayerId = async (leagueId, playerId) => {
     const requestRaw = await aR.pb.collection('purchases').getList(1, 40, {
-        filter: `(player='${playerId}' && league='${leagueId}')`
+        filter: `(player='${playerId}' && league='${leagueId}' && closed=false)`
     });
     return requestRaw.items[0] || null
 }
