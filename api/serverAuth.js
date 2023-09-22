@@ -26,7 +26,10 @@ const getAuthenticatedSquad = async (req, res) => {
 
   } catch (e) {
     res.status(401).send(e.message)
-    return null
+    return {
+      teamId: null, 
+      leagueId: null
+    }
   }
 
 }
