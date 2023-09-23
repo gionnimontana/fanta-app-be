@@ -1,515 +1,798 @@
 [
   {
-    "id": "_pb_users_auth_",
-    "name": "users",
-    "type": "auth",
-    "system": false,
-    "schema": [
-      {
-        "id": "users_name",
-        "name": "name",
-        "type": "text",
-        "system": false,
-        "required": false,
-        "options": {
-          "min": null,
-          "max": null,
-          "pattern": ""
-        }
-      },
-      {
-        "id": "users_avatar",
-        "name": "avatar",
-        "type": "file",
-        "system": false,
-        "required": false,
-        "options": {
-          "maxSelect": 1,
-          "maxSize": 5242880,
-          "mimeTypes": [
-            "image/jpeg",
-            "image/png",
-            "image/svg+xml",
-            "image/gif",
-            "image/webp"
-          ],
-          "thumbs": null
-        }
-      },
-      {
-        "id": "ognuzkli",
-        "name": "team",
-        "type": "relation",
-        "system": false,
-        "required": false,
-        "options": {
-          "collectionId": "31w5ditm2fvk8jn",
-          "cascadeDelete": false,
-          "minSelect": null,
-          "maxSelect": 1,
-          "displayFields": []
-        }
-      }
-    ],
-    "indexes": [],
-    "listRule": "id = @request.auth.id",
-    "viewRule": "id = @request.auth.id",
-    "createRule": "",
-    "updateRule": "id = @request.auth.id",
-    "deleteRule": "id = @request.auth.id",
-    "options": {
-      "allowEmailAuth": true,
-      "allowOAuth2Auth": true,
-      "allowUsernameAuth": true,
-      "exceptEmailDomains": null,
-      "manageRule": null,
-      "minPasswordLength": 8,
-      "onlyEmailDomains": null,
-      "requireEmail": false
-    }
+      "id": "6ki30d4jdljyjnj",
+      "name": "players_votes",
+      "type": "base",
+      "system": false,
+      "schema": [
+          {
+              "id": "e7qnscmz",
+              "name": "fvote",
+              "type": "number",
+              "system": false,
+              "required": false,
+              "options": {
+                  "min": 0,
+                  "max": 30
+              }
+          },
+          {
+              "id": "fvsyxgzl",
+              "name": "vote",
+              "type": "number",
+              "system": false,
+              "required": false,
+              "options": {
+                  "min": 0,
+                  "max": 10
+              }
+          },
+          {
+              "id": "brdu35hx",
+              "name": "day",
+              "type": "number",
+              "system": false,
+              "required": false,
+              "options": {
+                  "min": 1,
+                  "max": 38
+              }
+          },
+          {
+              "id": "9tx35xwm",
+              "name": "player_id",
+              "type": "relation",
+              "system": false,
+              "required": false,
+              "options": {
+                  "collectionId": "dt5u3y566rcvf4k",
+                  "cascadeDelete": false,
+                  "minSelect": null,
+                  "maxSelect": 1,
+                  "displayFields": []
+              }
+          }
+      ],
+      "indexes": [],
+      "listRule": "",
+      "viewRule": "",
+      "createRule": null,
+      "updateRule": null,
+      "deleteRule": null,
+      "options": {}
   },
   {
-    "id": "6ki30d4jdljyjnj",
-    "name": "players_votes",
-    "type": "base",
-    "system": false,
-    "schema": [
-      {
-        "id": "e7qnscmz",
-        "name": "fvote",
-        "type": "number",
-        "system": false,
-        "required": false,
-        "options": {
-          "min": 0,
-          "max": 30
-        }
-      },
-      {
-        "id": "fvsyxgzl",
-        "name": "vote",
-        "type": "number",
-        "system": false,
-        "required": false,
-        "options": {
-          "min": 0,
-          "max": 10
-        }
-      },
-      {
-        "id": "brdu35hx",
-        "name": "day",
-        "type": "number",
-        "system": false,
-        "required": false,
-        "options": {
-          "min": 1,
-          "max": 38
-        }
-      },
-      {
-        "id": "9tx35xwm",
-        "name": "player_id",
-        "type": "relation",
-        "system": false,
-        "required": false,
-        "options": {
-          "collectionId": "dt5u3y566rcvf4k",
-          "cascadeDelete": false,
-          "minSelect": null,
-          "maxSelect": 1,
-          "displayFields": []
-        }
-      }
-    ],
-    "indexes": [],
-    "listRule": "",
-    "viewRule": "",
-    "createRule": "",
-    "updateRule": "",
-    "deleteRule": "",
-    "options": {}
+      "id": "gzmukf6mt0p9gx2",
+      "name": "schedules",
+      "type": "base",
+      "system": false,
+      "schema": [
+          {
+              "id": "pojsaa1b",
+              "name": "day",
+              "type": "number",
+              "system": false,
+              "required": false,
+              "options": {
+                  "min": 1,
+                  "max": 38
+              }
+          },
+          {
+              "id": "m60vlkav",
+              "name": "start",
+              "type": "text",
+              "system": false,
+              "required": false,
+              "options": {
+                  "min": null,
+                  "max": null,
+                  "pattern": ""
+              }
+          },
+          {
+              "id": "lnobzxk7",
+              "name": "end",
+              "type": "text",
+              "system": false,
+              "required": false,
+              "options": {
+                  "min": null,
+                  "max": null,
+                  "pattern": ""
+              }
+          }
+      ],
+      "indexes": [],
+      "listRule": "",
+      "viewRule": "",
+      "createRule": null,
+      "updateRule": null,
+      "deleteRule": null,
+      "options": {}
   },
   {
-    "id": "v5wqvimkdix8rvn",
-    "name": "purchases",
-    "type": "base",
-    "system": false,
-    "schema": [
-      {
-        "id": "3oyrum40",
-        "name": "player",
-        "type": "relation",
-        "system": false,
-        "required": true,
-        "options": {
-          "collectionId": "dt5u3y566rcvf4k",
-          "cascadeDelete": false,
-          "minSelect": null,
-          "maxSelect": 1,
-          "displayFields": []
-        }
-      },
-      {
-        "id": "jofaima4",
-        "name": "team",
-        "type": "relation",
-        "system": false,
-        "required": true,
-        "options": {
-          "collectionId": "31w5ditm2fvk8jn",
-          "cascadeDelete": false,
-          "minSelect": null,
-          "maxSelect": 1,
-          "displayFields": []
-        }
-      },
-      {
-        "id": "9ewrxhbg",
-        "name": "price",
-        "type": "number",
-        "system": false,
-        "required": false,
-        "options": {
-          "min": 0,
-          "max": 5000
-        }
-      }
-    ],
-    "indexes": [],
-    "listRule": "",
-    "viewRule": "",
-    "createRule": "",
-    "updateRule": "",
-    "deleteRule": "",
-    "options": {}
+      "id": "2haogs8qowk5xdy",
+      "name": "articles",
+      "type": "base",
+      "system": false,
+      "schema": [
+          {
+              "id": "gzfyx7jc",
+              "name": "league",
+              "type": "relation",
+              "system": false,
+              "required": false,
+              "options": {
+                  "collectionId": "mwacewtt6vc22ib",
+                  "cascadeDelete": false,
+                  "minSelect": null,
+                  "maxSelect": 1,
+                  "displayFields": []
+              }
+          },
+          {
+              "id": "mxonyehr",
+              "name": "content",
+              "type": "text",
+              "system": false,
+              "required": true,
+              "options": {
+                  "min": 5,
+                  "max": 3000,
+                  "pattern": ""
+              }
+          },
+          {
+              "id": "ediag4ni",
+              "name": "category",
+              "type": "text",
+              "system": false,
+              "required": true,
+              "options": {
+                  "min": 1,
+                  "max": 20,
+                  "pattern": ""
+              }
+          },
+          {
+              "id": "vqzs0j8e",
+              "name": "day",
+              "type": "number",
+              "system": false,
+              "required": false,
+              "options": {
+                  "min": 1,
+                  "max": 38
+              }
+          },
+          {
+              "id": "r3bib0dt",
+              "name": "title",
+              "type": "text",
+              "system": false,
+              "required": false,
+              "options": {
+                  "min": null,
+                  "max": null,
+                  "pattern": ""
+              }
+          }
+      ],
+      "indexes": [],
+      "listRule": "",
+      "viewRule": "",
+      "createRule": null,
+      "updateRule": null,
+      "deleteRule": null,
+      "options": {}
   },
   {
-    "id": "31w5ditm2fvk8jn",
-    "name": "teams",
-    "type": "base",
-    "system": false,
-    "schema": [
-      {
-        "id": "ulf74r7g",
-        "name": "name",
-        "type": "text",
-        "system": false,
-        "required": true,
-        "options": {
-          "min": 3,
-          "max": 18,
-          "pattern": ""
-        }
-      },
-      {
-        "id": "axnij4gk",
-        "name": "credits",
-        "type": "number",
-        "system": false,
-        "required": false,
-        "options": {
-          "min": 0,
-          "max": 9999
-        }
-      },
-      {
-        "id": "ldarvmsj",
-        "name": "score",
-        "type": "json",
-        "system": false,
-        "required": false,
-        "options": {}
-      },
-      {
-        "id": "w9qgsg33",
-        "name": "emoji",
-        "type": "text",
-        "system": false,
-        "required": false,
-        "options": {
-          "min": null,
-          "max": null,
-          "pattern": ""
-        }
-      },
-      {
-        "id": "u7wjsbaj",
-        "name": "auto_formation",
-        "type": "bool",
-        "system": false,
-        "required": false,
-        "options": {}
-      }
-    ],
-    "indexes": [],
-    "listRule": "",
-    "viewRule": "",
-    "createRule": "",
-    "updateRule": "",
-    "deleteRule": "",
-    "options": {}
+      "id": "1rqs6nrdb619ekr",
+      "name": "team_players",
+      "type": "base",
+      "system": false,
+      "schema": [
+          {
+              "id": "hwjtcrhb",
+              "name": "league",
+              "type": "relation",
+              "system": false,
+              "required": false,
+              "options": {
+                  "collectionId": "mwacewtt6vc22ib",
+                  "cascadeDelete": false,
+                  "minSelect": null,
+                  "maxSelect": 1,
+                  "displayFields": []
+              }
+          },
+          {
+              "id": "np72lexu",
+              "name": "team",
+              "type": "relation",
+              "system": false,
+              "required": false,
+              "options": {
+                  "collectionId": "31w5ditm2fvk8jn",
+                  "cascadeDelete": false,
+                  "minSelect": null,
+                  "maxSelect": 1,
+                  "displayFields": []
+              }
+          },
+          {
+              "id": "uboxnyem",
+              "name": "player",
+              "type": "relation",
+              "system": false,
+              "required": false,
+              "options": {
+                  "collectionId": "dt5u3y566rcvf4k",
+                  "cascadeDelete": false,
+                  "minSelect": null,
+                  "maxSelect": 1,
+                  "displayFields": []
+              }
+          }
+      ],
+      "indexes": [],
+      "listRule": "",
+      "viewRule": "",
+      "createRule": null,
+      "updateRule": null,
+      "deleteRule": null,
+      "options": {}
   },
   {
-    "id": "dt5u3y566rcvf4k",
-    "name": "players_stats",
-    "type": "base",
-    "system": false,
-    "schema": [
-      {
-        "id": "2cslhpi6",
-        "name": "name",
-        "type": "text",
-        "system": false,
-        "required": true,
-        "options": {
-          "min": 3,
-          "max": 20,
-          "pattern": ""
-        }
-      },
-      {
-        "id": "xzlgb86n",
-        "name": "team",
-        "type": "text",
-        "system": false,
-        "required": true,
-        "options": {
-          "min": 3,
-          "max": 15,
-          "pattern": ""
-        }
-      },
-      {
-        "id": "gpidlhep",
-        "name": "fvm",
-        "type": "number",
-        "system": false,
-        "required": false,
-        "options": {
-          "min": 0,
-          "max": 1000
-        }
-      },
-      {
-        "id": "af7ulzts",
-        "name": "starter_index",
-        "type": "number",
-        "system": false,
-        "required": false,
-        "options": {
-          "min": 0,
-          "max": 100
-        }
-      },
-      {
-        "id": "lm6mssvn",
-        "name": "role",
-        "type": "text",
-        "system": false,
-        "required": true,
-        "options": {
-          "min": 1,
-          "max": 1,
-          "pattern": ""
-        }
-      },
-      {
-        "id": "aeqfwr3c",
-        "name": "play_next_match",
-        "type": "number",
-        "system": false,
-        "required": false,
-        "options": {
-          "min": 0,
-          "max": 100
-        }
-      }
-    ],
-    "indexes": [],
-    "listRule": "",
-    "viewRule": "",
-    "createRule": "",
-    "updateRule": "",
-    "deleteRule": "",
-    "options": {}
+      "id": "dt5u3y566rcvf4k",
+      "name": "players_stats",
+      "type": "base",
+      "system": false,
+      "schema": [
+          {
+              "id": "lm6mssvn",
+              "name": "role",
+              "type": "text",
+              "system": false,
+              "required": true,
+              "options": {
+                  "min": 1,
+                  "max": 1,
+                  "pattern": ""
+              }
+          },
+          {
+              "id": "2cslhpi6",
+              "name": "name",
+              "type": "text",
+              "system": false,
+              "required": true,
+              "options": {
+                  "min": 3,
+                  "max": 20,
+                  "pattern": ""
+              }
+          },
+          {
+              "id": "xzlgb86n",
+              "name": "team",
+              "type": "text",
+              "system": false,
+              "required": true,
+              "options": {
+                  "min": 3,
+                  "max": 15,
+                  "pattern": ""
+              }
+          },
+          {
+              "id": "gpidlhep",
+              "name": "fvm",
+              "type": "number",
+              "system": false,
+              "required": false,
+              "options": {
+                  "min": 0,
+                  "max": 1000
+              }
+          },
+          {
+              "id": "aeqfwr3c",
+              "name": "play_next_match",
+              "type": "number",
+              "system": false,
+              "required": false,
+              "options": {
+                  "min": 0,
+                  "max": 100
+              }
+          },
+          {
+              "id": "af7ulzts",
+              "name": "starter_index",
+              "type": "number",
+              "system": false,
+              "required": false,
+              "options": {
+                  "min": 0,
+                  "max": 100
+              }
+          },
+          {
+              "id": "gfvsxfb6",
+              "name": "out_of_game",
+              "type": "bool",
+              "system": false,
+              "required": false,
+              "options": {}
+          }
+      ],
+      "indexes": [],
+      "listRule": "",
+      "viewRule": "",
+      "createRule": null,
+      "updateRule": null,
+      "deleteRule": null,
+      "options": {}
   },
   {
-    "id": "wwnlulgcyvbszlr",
-    "name": "calendar",
-    "type": "base",
-    "system": false,
-    "schema": [
-      {
-        "id": "335qaz3h",
-        "name": "day",
-        "type": "number",
-        "system": false,
-        "required": true,
-        "options": {
-          "min": 1,
-          "max": 50
-        }
-      },
-      {
-        "id": "ucafqbqh",
-        "name": "match",
-        "type": "text",
-        "system": false,
-        "required": true,
-        "options": {
-          "min": 0,
-          "max": 50,
-          "pattern": ""
-        }
-      },
-      {
-        "id": "kqhgr9xi",
-        "name": "result",
-        "type": "text",
-        "system": false,
-        "required": false,
-        "options": {
-          "min": null,
-          "max": 1000,
-          "pattern": ""
-        }
-      },
-      {
-        "id": "ramowxhv",
-        "name": "home_form",
-        "type": "json",
-        "system": false,
-        "required": false,
-        "options": {}
-      },
-      {
-        "id": "gwoyt37y",
-        "name": "away_form",
-        "type": "json",
-        "system": false,
-        "required": false,
-        "options": {}
-      }
-    ],
-    "indexes": [],
-    "listRule": "",
-    "viewRule": "",
-    "createRule": "",
-    "updateRule": "",
-    "deleteRule": "",
-    "options": {}
+      "id": "vmz8lrkhrjlbtw2",
+      "name": "private_purchases",
+      "type": "base",
+      "system": false,
+      "schema": [
+          {
+              "id": "y7ipsaud",
+              "name": "league",
+              "type": "relation",
+              "system": false,
+              "required": false,
+              "options": {
+                  "collectionId": "mwacewtt6vc22ib",
+                  "cascadeDelete": false,
+                  "minSelect": null,
+                  "maxSelect": 1,
+                  "displayFields": []
+              }
+          },
+          {
+              "id": "00wjrux2",
+              "name": "from_team",
+              "type": "relation",
+              "system": false,
+              "required": false,
+              "options": {
+                  "collectionId": "31w5ditm2fvk8jn",
+                  "cascadeDelete": false,
+                  "minSelect": null,
+                  "maxSelect": 1,
+                  "displayFields": []
+              }
+          },
+          {
+              "id": "fszvcamy",
+              "name": "to_team",
+              "type": "relation",
+              "system": false,
+              "required": false,
+              "options": {
+                  "collectionId": "31w5ditm2fvk8jn",
+                  "cascadeDelete": false,
+                  "minSelect": null,
+                  "maxSelect": 1,
+                  "displayFields": []
+              }
+          },
+          {
+              "id": "n6rrgbnn",
+              "name": "players_offered",
+              "type": "relation",
+              "system": false,
+              "required": false,
+              "options": {
+                  "collectionId": "dt5u3y566rcvf4k",
+                  "cascadeDelete": false,
+                  "minSelect": null,
+                  "maxSelect": null,
+                  "displayFields": []
+              }
+          },
+          {
+              "id": "gu1cy6bl",
+              "name": "players_required",
+              "type": "relation",
+              "system": false,
+              "required": false,
+              "options": {
+                  "collectionId": "dt5u3y566rcvf4k",
+                  "cascadeDelete": false,
+                  "minSelect": null,
+                  "maxSelect": null,
+                  "displayFields": []
+              }
+          },
+          {
+              "id": "lqswopf6",
+              "name": "credit_offered",
+              "type": "number",
+              "system": false,
+              "required": false,
+              "options": {
+                  "min": null,
+                  "max": null
+              }
+          },
+          {
+              "id": "hezamsnb",
+              "name": "credit_required",
+              "type": "number",
+              "system": false,
+              "required": false,
+              "options": {
+                  "min": null,
+                  "max": null
+              }
+          },
+          {
+              "id": "kvkkwzsk",
+              "name": "accepted",
+              "type": "bool",
+              "system": false,
+              "required": false,
+              "options": {}
+          }
+      ],
+      "indexes": [],
+      "listRule": null,
+      "viewRule": null,
+      "createRule": null,
+      "updateRule": null,
+      "deleteRule": null,
+      "options": {}
   },
   {
-    "id": "2haogs8qowk5xdy",
-    "name": "articles",
-    "type": "base",
-    "system": false,
-    "schema": [
-      {
-        "id": "mxonyehr",
-        "name": "content",
-        "type": "text",
-        "system": false,
-        "required": true,
-        "options": {
-          "min": 5,
-          "max": 3000,
-          "pattern": ""
-        }
-      },
-      {
-        "id": "ediag4ni",
-        "name": "category",
-        "type": "text",
-        "system": false,
-        "required": true,
-        "options": {
-          "min": 1,
-          "max": 20,
-          "pattern": ""
-        }
-      },
-      {
-        "id": "vqzs0j8e",
-        "name": "day",
-        "type": "number",
-        "system": false,
-        "required": false,
-        "options": {
-          "min": 1,
-          "max": 38
-        }
-      },
-      {
-        "id": "r3bib0dt",
-        "name": "title",
-        "type": "text",
-        "system": false,
-        "required": false,
-        "options": {
-          "min": null,
-          "max": null,
-          "pattern": ""
-        }
-      }
-    ],
-    "indexes": [],
-    "listRule": "",
-    "viewRule": "",
-    "createRule": "",
-    "updateRule": "",
-    "deleteRule": "",
-    "options": {}
+      "id": "mwacewtt6vc22ib",
+      "name": "leagues",
+      "type": "base",
+      "system": false,
+      "schema": [
+          {
+              "id": "y8vowfac",
+              "name": "name",
+              "type": "text",
+              "system": false,
+              "required": false,
+              "options": {
+                  "min": null,
+                  "max": null,
+                  "pattern": ""
+              }
+          }
+      ],
+      "indexes": [],
+      "listRule": "",
+      "viewRule": "",
+      "createRule": null,
+      "updateRule": null,
+      "deleteRule": null,
+      "options": {}
   },
   {
-    "id": "gzmukf6mt0p9gx2",
-    "name": "schedules",
-    "type": "base",
-    "system": false,
-    "schema": [
-      {
-        "id": "pojsaa1b",
-        "name": "day",
-        "type": "number",
-        "system": false,
-        "required": false,
-        "options": {
-          "min": 1,
-          "max": 38
-        }
-      },
-      {
-        "id": "m60vlkav",
-        "name": "start",
-        "type": "text",
-        "system": false,
-        "required": false,
-        "options": {
-          "min": null,
-          "max": null,
-          "pattern": ""
-        }
-      },
-      {
-        "id": "lnobzxk7",
-        "name": "end",
-        "type": "text",
-        "system": false,
-        "required": false,
-        "options": {
-          "min": null,
-          "max": null,
-          "pattern": ""
-        }
+      "id": "wwnlulgcyvbszlr",
+      "name": "calendar",
+      "type": "base",
+      "system": false,
+      "schema": [
+          {
+              "id": "hgv6gcmb",
+              "name": "league",
+              "type": "relation",
+              "system": false,
+              "required": false,
+              "options": {
+                  "collectionId": "mwacewtt6vc22ib",
+                  "cascadeDelete": false,
+                  "minSelect": null,
+                  "maxSelect": 1,
+                  "displayFields": []
+              }
+          },
+          {
+              "id": "335qaz3h",
+              "name": "day",
+              "type": "number",
+              "system": false,
+              "required": true,
+              "options": {
+                  "min": 1,
+                  "max": 50
+              }
+          },
+          {
+              "id": "ucafqbqh",
+              "name": "match",
+              "type": "text",
+              "system": false,
+              "required": true,
+              "options": {
+                  "min": 0,
+                  "max": 50,
+                  "pattern": ""
+              }
+          },
+          {
+              "id": "udprerhf",
+              "name": "result",
+              "type": "json",
+              "system": false,
+              "required": false,
+              "options": {}
+          },
+          {
+              "id": "ramowxhv",
+              "name": "home_form",
+              "type": "json",
+              "system": false,
+              "required": false,
+              "options": {}
+          },
+          {
+              "id": "gwoyt37y",
+              "name": "away_form",
+              "type": "json",
+              "system": false,
+              "required": false,
+              "options": {}
+          }
+      ],
+      "indexes": [],
+      "listRule": "",
+      "viewRule": "",
+      "createRule": null,
+      "updateRule": null,
+      "deleteRule": null,
+      "options": {}
+  },
+  {
+      "id": "31w5ditm2fvk8jn",
+      "name": "teams",
+      "type": "base",
+      "system": false,
+      "schema": [
+          {
+              "id": "ua0mqgtc",
+              "name": "league",
+              "type": "relation",
+              "system": false,
+              "required": true,
+              "options": {
+                  "collectionId": "mwacewtt6vc22ib",
+                  "cascadeDelete": false,
+                  "minSelect": null,
+                  "maxSelect": 1,
+                  "displayFields": []
+              }
+          },
+          {
+              "id": "ulf74r7g",
+              "name": "name",
+              "type": "text",
+              "system": false,
+              "required": true,
+              "options": {
+                  "min": 3,
+                  "max": 18,
+                  "pattern": ""
+              }
+          },
+          {
+              "id": "w9qgsg33",
+              "name": "emoji",
+              "type": "text",
+              "system": false,
+              "required": false,
+              "options": {
+                  "min": null,
+                  "max": null,
+                  "pattern": ""
+              }
+          },
+          {
+              "id": "axnij4gk",
+              "name": "credits",
+              "type": "number",
+              "system": false,
+              "required": false,
+              "options": {
+                  "min": 0,
+                  "max": 9999
+              }
+          },
+          {
+              "id": "u7wjsbaj",
+              "name": "auto_formation",
+              "type": "bool",
+              "system": false,
+              "required": false,
+              "options": {}
+          },
+          {
+              "id": "ldarvmsj",
+              "name": "score",
+              "type": "json",
+              "system": false,
+              "required": false,
+              "options": {}
+          }
+      ],
+      "indexes": [],
+      "listRule": "",
+      "viewRule": "",
+      "createRule": null,
+      "updateRule": null,
+      "deleteRule": null,
+      "options": {}
+  },
+  {
+      "id": "_pb_users_auth_",
+      "name": "users",
+      "type": "auth",
+      "system": false,
+      "schema": [
+          {
+              "id": "sb588pv3",
+              "name": "league",
+              "type": "relation",
+              "system": false,
+              "required": false,
+              "options": {
+                  "collectionId": "mwacewtt6vc22ib",
+                  "cascadeDelete": false,
+                  "minSelect": null,
+                  "maxSelect": 1,
+                  "displayFields": []
+              }
+          },
+          {
+              "id": "ognuzkli",
+              "name": "team",
+              "type": "relation",
+              "system": false,
+              "required": false,
+              "options": {
+                  "collectionId": "31w5ditm2fvk8jn",
+                  "cascadeDelete": false,
+                  "minSelect": null,
+                  "maxSelect": 1,
+                  "displayFields": []
+              }
+          }
+      ],
+      "indexes": [],
+      "listRule": "id = @request.auth.id",
+      "viewRule": "id = @request.auth.id",
+      "createRule": "",
+      "updateRule": "id = @request.auth.id",
+      "deleteRule": "id = @request.auth.id",
+      "options": {
+          "allowEmailAuth": true,
+          "allowOAuth2Auth": true,
+          "allowUsernameAuth": true,
+          "exceptEmailDomains": null,
+          "manageRule": null,
+          "minPasswordLength": 8,
+          "onlyEmailDomains": null,
+          "requireEmail": false
       }
-    ],
-    "indexes": [],
-    "listRule": "",
-    "viewRule": "",
-    "createRule": "",
-    "updateRule": "",
-    "deleteRule": "",
-    "options": {}
+  },
+  {
+      "id": "v5wqvimkdix8rvn",
+      "name": "purchases",
+      "type": "base",
+      "system": false,
+      "schema": [
+          {
+              "id": "ed9djhab",
+              "name": "league",
+              "type": "relation",
+              "system": false,
+              "required": false,
+              "options": {
+                  "collectionId": "mwacewtt6vc22ib",
+                  "cascadeDelete": false,
+                  "minSelect": null,
+                  "maxSelect": 1,
+                  "displayFields": []
+              }
+          },
+          {
+              "id": "3oyrum40",
+              "name": "player",
+              "type": "relation",
+              "system": false,
+              "required": true,
+              "options": {
+                  "collectionId": "dt5u3y566rcvf4k",
+                  "cascadeDelete": false,
+                  "minSelect": null,
+                  "maxSelect": 1,
+                  "displayFields": []
+              }
+          },
+          {
+              "id": "4ja8b7so",
+              "name": "from_team",
+              "type": "relation",
+              "system": false,
+              "required": false,
+              "options": {
+                  "collectionId": "31w5ditm2fvk8jn",
+                  "cascadeDelete": false,
+                  "minSelect": null,
+                  "maxSelect": 1,
+                  "displayFields": []
+              }
+          },
+          {
+              "id": "jofaima4",
+              "name": "to_team",
+              "type": "relation",
+              "system": false,
+              "required": false,
+              "options": {
+                  "collectionId": "31w5ditm2fvk8jn",
+                  "cascadeDelete": false,
+                  "minSelect": null,
+                  "maxSelect": 1,
+                  "displayFields": []
+              }
+          },
+          {
+              "id": "9ewrxhbg",
+              "name": "price",
+              "type": "number",
+              "system": false,
+              "required": false,
+              "options": {
+                  "min": 0,
+                  "max": 5000
+              }
+          },
+          {
+              "id": "0dhn7xxb",
+              "name": "max_price",
+              "type": "number",
+              "system": false,
+              "required": false,
+              "options": {
+                  "min": null,
+                  "max": null
+              }
+          },
+          {
+              "id": "2ha4zvwm",
+              "name": "closed",
+              "type": "bool",
+              "system": false,
+              "required": false,
+              "options": {}
+          },
+          {
+              "id": "lx6evu9x",
+              "name": "validated",
+              "type": "bool",
+              "system": false,
+              "required": false,
+              "options": {}
+          }
+      ],
+      "indexes": [],
+      "listRule": "",
+      "viewRule": "",
+      "createRule": null,
+      "updateRule": null,
+      "deleteRule": null,
+      "options": {}
   }
 ]
