@@ -1,5 +1,5 @@
-const aRC = require('../api/restCollection')
-const h = require('../helpers/index')
+const aRC = require('../../api/restCollection')
+const h = require('../../helpers/index')
 const maturePurchaseOffset = 86400000 // 24h
 
 const singleById = async (id) => {

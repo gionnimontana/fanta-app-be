@@ -10,7 +10,7 @@ const formationsScripts = require('./scripts/formationsScripts')
 const scoresScripts = require('./scripts/scoresScripts')
 const rankingScripts = require('./scripts/rankingScripts')
 const articlesScripts = require('./scripts/articlesScripts')
-const validatePurchase = require('./scripts/purchaseScripts')
+const validatePurchase = require('./scripts/market/purchasesValidationScripts')
 
 const main = async () => {
 

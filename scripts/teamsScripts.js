@@ -67,7 +67,7 @@ const roleAuction = (role, squads, players) => {
     return Object.values(squadMap)
 }
 
-const startAuction = async () => {
+const startAuction = async (leagueID) => {
     const teams = await aRC.getAllSquads()
     const squads = mockSquads.map((el, i) => ({
         ...el,
@@ -89,7 +89,7 @@ const startAuction = async () => {
     })
 
     console.log('auction done')
-    await aRC.writeSquads('ernyanuus7tdszx',dehidratedSquads, players)
+    await aRC.writeSquads(leagueID,dehidratedSquads, players)
 }
 
 module.exports = {

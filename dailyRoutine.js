@@ -4,11 +4,11 @@ const utils = require('./scripts/utils')
 const statsScraper = require('./scrapers/statsScraper')
 const quotsScraper = require('./scrapers/quotsScraper')
 const titolaritaScraper = require('./scrapers/titolaritaScraper')
-const createScores = require('./scripts/createScores')
-const createRanking = require('./scripts/createRanking')
-const loadAutoFormation = require('./scripts/createFormations')
-const createArticles = require('./scripts/createArticles')
-const validatePurchase = require('./scripts/validatePurchase')
+const createScores = require('./scripts/scoresScripts')
+const createRanking = require('./scripts/rankingScripts')
+const loadAutoFormation = require('./scripts/formationsScripts')
+const createArticles = require('./scripts/articlesScripts')
+const validatePurchase = require('./scripts/market/purchasesValidationScripts')
 
 const main = async () => {
     // always excecuted

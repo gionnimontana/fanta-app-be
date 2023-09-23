@@ -4,7 +4,7 @@ const cors = require('cors')
 const bodyParser = require('body-parser')
 const sa = require('./api/serverAuth')
 const formationScript = require('./scripts/formationsScripts')
-const purchaseScript = require('./scripts/purchaseScripts')
+const purchaseScript = require('./scripts/market/purchasesValidationScripts')
 const aRC = require('./api/restCollection')
 
 const app = express()
