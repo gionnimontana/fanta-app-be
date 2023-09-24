@@ -1,10 +1,12 @@
 const aR = require('./rest')
 const u = require('./utils')
 
-const getAllPlayers = async () => {
+const getAllPlayers = async (filterOutOfGame) => {
     const page1 = await aR.getPB('collections/players_stats/records?perPage=500&page=1')
     const page2 = await aR.getPB('collections/players_stats/records?perPage=500&page=2')
-    return [...page1.items, ...page2.items]
+    const outPut = [...page1.items, ...page2.items]
+    if (filterOutOfGame) return outPut.filter(p => !p.out_of_game)
+    return outPut
 }
 
 const getSinglePlayer = async (id) => {
@@ -299,10 +301,11 @@ const writeTeamPlayer = async (teamId, playerId, leagueId) => {
     return requestRaw
 }
 
-const getPurchaseByTeam = async (teamId) => {
-    const urlParams = `team='${teamId}'`
-    const requestRaw = await aR.getPB('collections/purchases/records?filter=(' + urlParams + ')')
-    return requestRaw.items
+const getIncomingPurchasesByTeam = async (teamId) => {
+    const requestRaw = await aR.pb.collection('purchases').getList(1, 40, {
+        filter: `(from_team='${playerId}' && closed=false)`
+    });
+    return requestRaw.items[0] || null
 }
 
 const getPurchaseByLeagueAndPlayerId = async (leagueId, playerId) => {
@@ -332,6 +335,13 @@ const getAllOpenPurchases = async () => {
     return requestRaw.items
 }
 
+const getAllOpenPurchasesByLeague = async (leagueId) => {
+    const result = await aR.pb.collection('purchases').getList(1, 500, {
+        filter: `(closed=false && league='${leagueId}')`
+    });
+    return result.items
+}
+
 const getAllOpenValidatedPurchases = async () => {
     const result = await aR.pb.collection('purchases').getList(1, 500, {
         filter: `(closed=false && validated=true)`
@@ -344,10 +354,11 @@ module.exports = {
     getSinglePlayer: getSinglePlayer,
     getAllLeagues: getAllLeagues,
     getPlayersByIds: getPlayersByIds,
-    getPurchaseByTeam: getPurchaseByTeam,
+    getIncomingPurchasesByTeam: getIncomingPurchasesByTeam,
     getSinglePurchase: getSinglePurchase,
     getAllPurchases: getAllPurchases,
     getAllOpenPurchases: getAllOpenPurchases,
+    getAllOpenPurchasesByLeague: getAllOpenPurchasesByLeague,
     getPurchaseByLeagueAndPlayerId: getPurchaseByLeagueAndPlayerId,
     getAllOpenValidatedPurchases, getAllOpenValidatedPurchases,
     getAllVotes: getAllVotes,
