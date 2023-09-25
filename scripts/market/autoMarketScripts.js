@@ -14,12 +14,49 @@ const getCustomSortedPurchaseListPerRole = (role, richPlayers, startersNeed) => 
     return sortedPlayers
 }
 
+const getTeamPlayersWithOffer = (richPlayers) => {
+    const allRolePlayers = [...richPlayers.p, ...richPlayers.d, ...richPlayers.c, ...richPlayers.a]
+    const teamPlayersWithOffer = allRolePlayers.filter(p => p.owned === true && p.active_offer !== null)
+    return teamPlayersWithOffer
+}
+
+const getOfferAppetibilityIndex = (richplayer) => {
+    const { custom_fvm, active_offer } = richplayer
+    if (active_offer) return 0
+    const { price } = active_offer
+    if (price > 1.5 * custom_fvm) return 1
+    return offerAppetibilityIndex
+}
+
+const evaluateIncomingPlayerOffer = (richplayer, mp) => {
+    let accepted = false
+    const offerAppetibilityIndex = getOfferAppetibilityIndex(richplayer)
+
+    return accepted
+}
+
+const getOffersActions = (richPlayers, mp) => {
+    const teamPlayersWithOffer = getTeamPlayersWithOffer(richPlayers)
+    const offerActions = {
+        teamId: mp.team.id,
+        leagueId: mp.team.league,
+        list: []
+    }
+    for (const p of teamPlayersWithOffer) {
+        const accepted = evaluateIncomingPlayerOffer(p, mp)
+        offerActions.list.push({id: purchaseId, accepted})
+    }
+}
+
+const getSellActions = (richPlayers, mp) => {
+}
+
 const getBuyActions = (richPlayers, mp) => {
     const {buyNeed, startersNeed} = mp
     if (!buyNeed) return
     const buyActions = {
-        teamId: team.id,
-        leagueId: team.league,
+        teamId: mp.team.id,
+        leagueId: mp.team.league,
         list: []
     }
     for (const role in buyNeed) {
@@ -44,6 +81,8 @@ const manageIncomingOffers = async (offersActions) => {
         if (o.accepted) {
             const purchaseId = o.id
             await pVscripts.acceptPurchaseOffer(purchaseId, offersActions.teamId)
+        } else {
+            await pVscripts.deletePurchaseOffer(o.id. offersActions.teamId)
         }
     }
 }
@@ -81,51 +120,63 @@ const sellPlayers = async (sellActions) => {
 }
 
 const evalueateStartersNeeded = (richPlayers) => {
-    const teamPlayers = richPlayers.filter(p => p.owned)
-    const si = 80
     let startersNeed = {
         p: 0,
         d: 0,
         c: 0,
         a: 0
     }
-    const starterP = teamPlayers.filter(p => p.role === 'p' && p.starter_index > si)
-    const starterD = teamPlayers.filter(p => p.role === 'd' && p.starter_index > si)
-    const starterC = teamPlayers.filter(p => p.role === 'c' && p.starter_index > si)
-    const starterA = teamPlayers.filter(p => p.role === 'a' && p.starter_index > si)
-    if (starterP.length < 1) startersNeed.p = 1
-    if (starterD.length < 4) startersNeed.d = 4 - starterD.length
-    if (starterC.length < 4) startersNeed.c = 4 - starterC.length
-    if (starterA.length < 3) startersNeed.a = 3 - starterA.length
+    if (starterP.length < 2) startersNeed.p = 2 - richPlayers.p.length
+    if (starterD.length < 4) startersNeed.d = 4 - richPlayers.d.length
+    if (starterC.length < 4) startersNeed.c = 4 - richPlayers.c.length
+    if (starterA.length < 3) startersNeed.a = 3 - richPlayers.a.length
     return startersNeed
 }
 
-// buyNeed example: { 'p': 1, 'd': 1, 'c': 1, 'a': 1 }
 const evalueateBuyNeeded = (richPlayers) => {
-    const teamPlayers = richPlayers.filter(p => p.owned)
     let buyNeed = {
         p: 0,
         d: 0,
         c: 0,
         a: 0
     }
-    const totalP = teamPlayers.filter(p => p.role === 'p')
-    const totalD = teamPlayers.filter(p => p.role === 'd')
-    const totalC = teamPlayers.filter(p => p.role === 'c')
-    const totalA = teamPlayers.filter(p => p.role === 'a')
-    if (totalP.length < 3) startersNeed.p = 1 - totalP.length
-    if (totalD.length < 4) startersNeed.d = 4 - totalP.length
-    if (totalC.length < 4) startersNeed.c = 4 - totalC.length
-    if (totalA.length < 3) startersNeed.a = 3 - totalA.length
-    return startersNeed
+    if (richPlayers.p.length < 2) buyNeed.p = 2 - richPlayers.p.length
+    if (richPlayers.d.length < 8) buyNeed.d = 8 - richPlayers.d.length
+    if (richPlayers.c.length < 8) buyNeed.c = 8 - richPlayers.c.length
+    if (richPlayers.a.length < 6) buyNeed.a = 6 - richPlayers.a.length
+    return buyNeed
 }
 
+const evalueateSellNeeded = (richPlayers) => {
+    let sellNeed = {
+        p: 0,
+        d: 0,
+        c: 0,
+        a: 0
+    }
+    if (richPlayers.p.length > 2) buyNeed.p = 2 - richPlayers.p.length - 2
+    if (richPlayers.d.length > 8) buyNeed.d = richPlayers.d.length - 8
+    if (richPlayers.c.length > 8) buyNeed.c = richPlayers.c.length - 8
+    if (richPlayers.a.length > 6) buyNeed.a = richPlayers.a.length - 6
+    return sellNeed
+}
 
-const getMarketParams = (richPlayers) => {
-    const startersNeed = evalueateStartersNeeded(teamRoaster, richPlayers)
-    const sellNeed = evalueateSellNeeded(richPlayers)
-    const buyNeed = evalueateBuyNeeded(richPlayers)
-    return {startersNeed, sellNeed, buyNeed}
+const getMarketParams = (team, richPlayers) => {
+    const teamPlayers = getTeamPlayers(richPlayers)
+    const startersNeed = evalueateStartersNeeded(teamPlayers)
+    const sellNeed = evalueateSellNeeded(teamPlayers)
+    const buyNeed = evalueateBuyNeeded(teamPlayers)
+    return {startersNeed, sellNeed, buyNeed, team}
+}
+
+const getTeamPlayers = (richPlayers) => {
+    const teamPlayers = {
+        p: richPlayers.p.filter(p => p.owned),
+        d: richPlayers.d.filter(p => p.owned),
+        c: richPlayers.c.filter(p => p.owned),
+        a: richPlayers.a.filter(p => p.owned)
+    }
+    return teamPlayers
 }
 
 const getRichPlayers = (customFVM, teamRoaster, players, leaguePurchases) => {
@@ -162,7 +213,7 @@ const runAutoMarket = async (team, allPlayers) => {
     const leaguePurchases = await aRC.getAllOpenPurchasesByLeague(team.league)
     const customFVM = getTeamCustomFVM(allPlayers)
     let richPlayers = getRichPlayers(customFVM,teamRoaster, allPlayers, leaguePurchases)
-    let mp = getMarketParams(richPlayers)
+    let mp = getMarketParams(team, richPlayers)
 
     const offersActions = getOffersActions(richPlayers, mp)
 
