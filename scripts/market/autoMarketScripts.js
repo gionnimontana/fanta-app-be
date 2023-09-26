@@ -1,15 +1,22 @@
 const pVscripts = require('./purchasesValidationScripts')
 const aRC = require('../../api/restCollection')
 const h = require('../../helpers/index')
+const starterIndex = 80
 
 // buyNeed example: { 'p': 1, 'd': 1, 'c': 1, 'a': 1 }
 // startersNeed example: { 'p': 1, 'd': 1, 'c': 1, 'a': 1 }
-// richPlayer example: { id: 1, fvm: 100, starter_index: 80, role: 'p', custom_fvm: 105, owned: true, active_offer: null, current_fvm: 110 }
+// richPlayer example: { id: 1, fvm: 100, starterIndex: 80, role: 'p', custom_fvm: 105, owned: true, active_offer: null, current_fvm: 110 }
 
 const getCustomSortedPurchaseListPerRole = (role, richPlayers, startersNeed) => {
     const players = richPlayers[role]
     let snp = startersNeed[role]
-    if (snp > 0) richPlayers.filter(p => p.starter_index > 80)
+    if (snp > 0) players.filter(p => p.starter_index >= starterIndex)
+    const sortedPlayers = players.sort((a, b) => a.custom_fvm + b.custom_fvm)
+    return sortedPlayers
+}
+
+const getCustomSortedPlayerToSellPerRole = (role, mp) => {
+    const players = mp.teamPlayers[role]
     const sortedPlayers = players.sort((a, b) => a.custom_fvm - b.custom_fvm)
     return sortedPlayers
 }
@@ -30,11 +37,16 @@ const getOfferAppetibilityIndex = (richplayer) => {
     return offerAppetibilityIndex
 }
 
-const sellImpactIndex = (richplayer, mp) => {
-    const sameRolePlayers = mp.teamPlayers[richplayer.role]
-    const averageCustomFvm = sameRolePlayers.reduce((sum, p) => sum + p.custom_fvm, 0) / sameRolePlayers.length
-    const averageCustomAfterSellFvm = (sum - richplayer.custom_fvm) / (sameRolePlayers.length - 1)
-    const sellImpactIndex = averageCustomFvm / averageCustomAfterSellFvm
+const getSellImpactIndex = (richplayer, mp) => {
+    const isStarter = richplayer.starter_index >= starterIndex
+    if (!isStarter) return 0.5
+    const sameRoleStarters = mp.teamPlayers[richplayer.role].filter(p => p.starter_index >= starterIndex)
+    const fvmSum = sameRoleStarters.reduce((sum, p) => sum + p.custom_fvm, 0)
+    const averageCustomFvm = fvmSum / sameRoleStarters.length
+    const averageCustomAfterSellFvm = (fvmSum - richplayer.custom_fvm) / (sameRoleStarters.length - 1)
+    const sellImpactIndex = 0.5 + (averageCustomAfterSellFvm - averageCustomFvm) / (2 * averageCustomFvm)
+    if (sellImpactIndex > 1) return 1
+    return sellImpactIndex
 }
 
 const evaluateIncomingPlayerOffer = (richplayer, mp) => {
@@ -43,9 +55,9 @@ const evaluateIncomingPlayerOffer = (richplayer, mp) => {
     const sellImpactIndex = getSellImpactIndex(richplayer, mp)
     const sellNeed = mp[richplayer.role].length > 0
     if (offerAppetibilityIndex >= 0.5) {
-
+        if (sellNeed && sellImpactIndex > 0.5) return true
     }
-    return accepted
+    return false
 }
 
 const getOffersActions = (richPlayers, mp) => {
@@ -53,15 +65,37 @@ const getOffersActions = (richPlayers, mp) => {
     const offerActions = {
         teamId: mp.team.id,
         leagueId: mp.team.league,
-        list: []
+        list: [],
+        rosterChanges: false
     }
     for (const p of teamPlayersWithOffer) {
         const accepted = evaluateIncomingPlayerOffer(p, mp)
         offerActions.list.push({id: purchaseId, accepted})
+        if (accepted) offerActions.rosterChanges = true
     }
+    return offerActions
 }
 
-const getSellActions = (richPlayers, mp) => {
+const getSellActions = (mp) => {
+    if (!mp.sellNeed) return
+    const sellActions = {
+        teamId: mp.team.id,
+        leagueId: mp.team.league,
+        list: []
+    }
+    for (const role in sellNeed) {
+        const neededPlayers = sellNeed[role]
+        if (neededPlayers > 0) {
+            const sortedPlayers = getCustomSortedPlayerToSellPerRole(role, mp)
+            const playersToSell = sortedPlayers.slice(0, neededPlayers)
+            for (const player of playersToSell) {
+                const price = player.current_fvm
+                const maxprice = Math.max(player.current_fvm, player.custom_fvm)
+                sellActions.list.push({playerID: player.id, price, maxprice})
+            }
+        }
+    }
+    return sellActions
 }
 
 const getBuyActions = (richPlayers, mp) => {
@@ -105,16 +139,14 @@ const buyPlayers = async (buyActions) => {
     for (const player of buyActions.list) { 
         const leagueId = buyActions.leagueId
         const playerID = player.playerID
-        const fromsquad = player.fromsquad
-        const tosquad = buyActions.teamId
         const price = player.price
         const maxprice = player.maxprice
         if (player.active_offer) {
             const purchaseId = player.active_offer.id
-            await pVscripts.updatePurchaseOffer(buyActions.teamId, purchaseId, price, maxPrice)
+            await pVscripts.updatePurchaseOffer(buyActions.teamId, purchaseId, price, maxprice)
         }
         else {
-            await pVscripts.createPurchaseOffer(leagueId, playerID, fromsquad, tosquad, price, maxprice)
+            await pVscripts.createPurchaseOffer(leagueId, buyActions.teamId, playerID, price, maxprice)
         }
     }
 }
@@ -133,17 +165,16 @@ const sellPlayers = async (sellActions) => {
 }
 
 const evalueateStartersNeeded = (richPlayers) => {
-    const si = 80
     let startersNeed = {
         p: 0,
         d: 0,
         c: 0,
         a: 0
     }
-    const starterP = richPlayers.p.filter(p => p.starter_index > si)
-    const starterD = richPlayers.d.filter(p => p.starter_index > si)
-    const starterC = richPlayers.c.filter(p => p.starter_index > si)
-    const starterA = richPlayers.a.filter(p => p.starter_index > si)
+    const starterP = richPlayers.p.filter(p => p.starterIndex >= starterIndex)
+    const starterD = richPlayers.d.filter(p => p.starterIndex >= starterIndex)
+    const starterC = richPlayers.c.filter(p => p.starterIndex >= starterIndex)
+    const starterA = richPlayers.a.filter(p => p.starterIndex >= starterIndex)
     if (starterP.length < 2) startersNeed.p = 2 - starterP.length
     if (starterD.length < 4) startersNeed.d = 4 - starterD.length
     if (starterC.length < 4) startersNeed.c = 4 - starterC.length
