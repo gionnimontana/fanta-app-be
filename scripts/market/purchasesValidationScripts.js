@@ -1,6 +1,7 @@
 const aRC = require('../../api/restCollection')
 const h = require('../../helpers/index')
 const maturePurchaseOffset = 86400000 // 24h
+const marketFee = 1
 
 const singleById = async (id) => {
     const purchase = await aRC.getSinglePurchase(id)
@@ -60,7 +61,7 @@ const allAutomated = async () => {
 const createPurchaseOffer = async (leagueId, teamId, playerId, price, maxPrice) => {
   const player = await aRC.getSinglePlayer(playerId)
   if (!player) throw new Error('invalid player')
-  const isPriceValid = price >= player.fvm
+  const isPriceValid = price >= (player.fvm - marketFee)
   if (!isPriceValid) throw new Error('invalid price')
   const isMaxPriceValid = maxPrice >= price
   if (!isMaxPriceValid) throw new Error('invalid max price')
