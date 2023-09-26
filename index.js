@@ -11,6 +11,7 @@ const scoresScripts = require('./scripts/scoresScripts')
 const rankingScripts = require('./scripts/rankingScripts')
 const articlesScripts = require('./scripts/articlesScripts')
 const validatePurchase = require('./scripts/market/purchasesValidationScripts')
+const autoMarketScripts = require('./scripts/market/autoMarketScripts')
 
 const main = async () => {
 
@@ -27,7 +28,7 @@ const main = async () => {
     // await rankingScripts.all()
     // await articlesScripts.allAutomated()
     // await validatePurchase.allAutomated()
-    // await autoMarketScripts.test()
+    await autoMarketScripts.test()
 }
 
 main()
