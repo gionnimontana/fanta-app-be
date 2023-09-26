@@ -12,6 +12,7 @@ const buildFormation = (sortedRoster) => {
 
     const calculateMaxStrikers = () => {
       if (midFielders.length === 6) return 1
+      if (midFielders.length === 5) return 2
       return 3
     }
 
