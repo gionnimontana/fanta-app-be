@@ -37,13 +37,16 @@ const writeMainDayArticle = async (league, day, ended) => {
     const withScore = ended ? 'con relativo punteggio' : 'che devono ancora giocarsi (senza punteggio)'
     const dayEnded = ended ? 'appena conclusa' : 'non ancora conclusa'
     const query = `considerando i match del giorno ${withScore} $$$ ${JSON.stringify(noNoisePayload)} $$$ scrivi un articolo sarcastico di massimo 500 caratteri sulla giornata ${day} ${dayEnded} della FantaBot League (fantacalcio)`
-    
-    const chat_completion = await openai.createChatCompletion({
-        model: "gpt-3.5-turbo",
-        messages: [{ role: "user", content: query }],
-    });
-    const gptMessage = chat_completion.data.choices[0].message.content
-    const res = await aRC.writeArticle(day, 'FantaBot League Giornata ' + day, gptMessage, 'results')
+    try {
+        const chat_completion = await openai.createChatCompletion({
+            model: "gpt-3.5-turbo",
+            messages: [{ role: "user", content: query }],
+        });
+        const gptMessage = chat_completion.data.choices[0].message.content
+        const res = await aRC.writeArticle(day, 'FantaBot League Giornata ' + day, gptMessage, 'results')
+    } catch (e) {
+        console.log('@@@ ERROR ON GPT API @@@', e)
+    }
     console.log('writeMainDayArticle', res)
 }
 
