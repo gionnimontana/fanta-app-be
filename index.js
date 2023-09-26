@@ -27,6 +27,7 @@ const main = async () => {
     // await rankingScripts.all()
     // await articlesScripts.allAutomated()
     // await validatePurchase.allAutomated()
+    // await autoMarketScripts.test()
 }
 
 main()
