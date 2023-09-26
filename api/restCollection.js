@@ -259,6 +259,7 @@ const writeTeamScore = async (teamId, score) => {
 }
 
 const writePurchase = async (leagueId, playerID, fromsquad, tosquad, price, maxprice) => {
+    const validated = !fromsquad || !tosquad
     const requestRaw = await aR.postPB({
         player: playerID,
         from_team: fromsquad,
@@ -266,7 +267,7 @@ const writePurchase = async (leagueId, playerID, fromsquad, tosquad, price, maxp
         price: price,
         max_price: maxprice,
         league: leagueId,
-        validated: fromsquad ? false : true,
+        validated: validated,
     }, 'collections/purchases/records')
 
     return requestRaw

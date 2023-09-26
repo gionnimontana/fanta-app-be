@@ -23,12 +23,12 @@ const main = async () => {
     // await statsScraper.allAutomated()
     // await titolaritaScraper.run()
     
-    // await formationsScripts.allAutomated()
+    await formationsScripts.allAutomated()
     // await scoresScripts.allAutomated()
     // await rankingScripts.all()
-    // await articlesScripts.allAutomated()
+    // await articlesScripts.writeMainDayArticle("ernyanuus7tdszx", 6, false)
     // await validatePurchase.allAutomated()
-    await autoMarketScripts.test()
+    // await autoMarketScripts.test()
 }
 
 main()

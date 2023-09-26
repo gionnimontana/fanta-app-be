@@ -77,8 +77,8 @@ const releasePlayer = async (leagueId, teamId, playerId) => {
   const playerTeam = await aRC.getTeamPlayerByLeagueAndPlayerId(leagueId, playerId)
   if (!playerTeam) throw new Error('player not in team')
   if (playerTeam.team !== teamId) throw new Error('invalid team, must be player team')
-  const playerPurchases = await aRC.getAllPurchasesByPlayerId(playerId)
-  if (playerPurchases.length > 0) throw new Error('player on sale')
+  const currentPurchase = await aRC.getPurchaseByLeagueAndPlayerId(leagueId, playerId)
+  if (currentPurchase) throw new Error('player already on sale')
   await aRC.writePurchase(leagueId, playerId, teamId, null, player.fvm - marketFee, player.fvm - marketFee)
 }
 
