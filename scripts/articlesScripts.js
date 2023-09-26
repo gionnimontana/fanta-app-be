@@ -8,9 +8,9 @@ const configuration = new Configuration({
 const openai = new OpenAIApi(configuration);
 
 
-const writeMainDayArticle = async (day, ended) => {
-    const allDayMatches = await aRC.getMatchByDay(day)
-    const allSquads = await aRC.getAllSquads()
+const writeMainDayArticle = async (league, day, ended) => {
+    const allDayMatches = await aRC.getMatchByLeagueAndDay(league, day)
+    const allSquads = await aRC.getAllSquadsByLeague(league)
     const noNoiseMatches = allDayMatches.map((el, i) => {
         const home = el.match.split('-')[0]
         const away = el.match.split('-')[1]
@@ -51,9 +51,10 @@ const allAutomated = async () => {
     const schedule = await aRC.getSortedSchedule()
     const matchDayEndedLessThanADayAgo = h.isMatchDayEndedLessThanADayAgo(schedule)
     if (matchDayEndedLessThanADayAgo) {
+        const league = "ernyanuus7tdszx"
         console.log('@@@CONDITIONAL-SCRIPT@@@ - writeMainDayArticle:', matchDayEndedLessThanADayAgo.day)
-        await writeMainDayArticle(matchDayEndedLessThanADayAgo.day, true)
-        await writeMainDayArticle(matchDayEndedLessThanADayAgo.day + 1, false)
+        await writeMainDayArticle(league, matchDayEndedLessThanADayAgo.day, true)
+        await writeMainDayArticle(league, matchDayEndedLessThanADayAgo.day + 1, false)
     } else {
         console.log('@@@CONDITIONAL-SCRIPT@@@ - writeMainDayArticle: NO RUN')
     }

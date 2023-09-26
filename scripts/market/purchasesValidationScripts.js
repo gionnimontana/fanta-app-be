@@ -61,7 +61,7 @@ const allAutomated = async () => {
 const createPurchaseOffer = async (leagueId, teamId, playerId, price, maxPrice) => {
   const player = await aRC.getSinglePlayer(playerId)
   if (!player) throw new Error('invalid player')
-  const isPriceValid = price >= (player.fvm - marketFee)
+  const isPriceValid = price >= player.fvm
   if (!isPriceValid) throw new Error('invalid price')
   const isMaxPriceValid = maxPrice >= price
   if (!isMaxPriceValid) throw new Error('invalid max price')
@@ -69,6 +69,17 @@ const createPurchaseOffer = async (leagueId, teamId, playerId, price, maxPrice) 
   if (currentPurchase) throw new Error('player already on sale')
   const playerTeam = await aRC.getTeamPlayerByLeagueAndPlayerId(leagueId, playerId)
   await aRC.writePurchase(leagueId, playerId, playerTeam?.team, teamId, price, maxPrice)
+}
+
+const releasePlayer = async (leagueId, teamId, playerId) => {
+  const player = await aRC.getSinglePlayer(playerId)
+  if (!player) throw new Error('invalid player')
+  const playerTeam = await aRC.getTeamPlayerByLeagueAndPlayerId(leagueId, playerId)
+  if (!playerTeam) throw new Error('player not in team')
+  if (playerTeam.team !== teamId) throw new Error('invalid team, must be player team')
+  const playerPurchases = await aRC.getAllPurchasesByPlayerId(playerId)
+  if (playerPurchases.length > 0) throw new Error('player on sale')
+  await aRC.writePurchase(leagueId, playerId, teamId, null, player.fvm - marketFee, player.fvm - marketFee)
 }
 
 const deletePurchaseOffer = async (id, teamId) => {
@@ -104,5 +115,6 @@ module.exports = {
     createPurchaseOffer: createPurchaseOffer,
     deletePurchaseOffer: deletePurchaseOffer,
     updatePurchaseOffer: updatePurchaseOffer,
-    acceptPurchaseOffer: acceptPurchaseOffer
+    acceptPurchaseOffer: acceptPurchaseOffer,
+    releasePlayer: releasePlayer
 }

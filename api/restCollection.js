@@ -135,6 +135,13 @@ const getMatchByDay = async (day) => {
     return requestRaw.items
 }
 
+const getMatchByLeagueAndDay = async (leagueId, day) => {
+    const allDayMatches = await aR.pb.collection('calendar').getList(1, 40, {
+        filter: `(day=${day} && league='${leagueId}')`
+    });
+    return allDayMatches.items
+}
+
 const getMatchByDayAndTeam = async (day, teamId) => {
     const matchOfTheDay = await getMatchByDay(day)
     const target = matchOfTheDay.find(m => m.match.includes(teamId))
@@ -368,6 +375,7 @@ module.exports = {
     getAllSquadsByLeague: getAllSquadsByLeague,
     getSingleSquad: getSingleSquad,
     getAllMatches: getAllMatches,
+    getMatchByLeagueAndDay: getMatchByLeagueAndDay,
     getMatchByDay: getMatchByDay,
     getMatchById: getMatchById,
     getMatchByDayAndTeam: getMatchByDayAndTeam,

@@ -50,3 +50,9 @@ app.post('/accept_purchase_offer', async (req, res) => {
   await sa.sfc(res, () => purchaseScript.acceptPurchaseOffer(req?.body?.purchase_id, teamId))
   sa.safeServerResponse(res, 'purchase offer accepted')
 })
+
+app.post('/release_player', async (req, res) => {
+  const { teamId, leagueId }  = await sa.getAuthenticatedSquad(req, res)
+  await sa.sfc(res, () => purchaseScript.acceptPurchaseOffer(leagueId, teamId, req?.body?.player))
+  sa.safeServerResponse(res, 'purchase offer accepted')
+})
