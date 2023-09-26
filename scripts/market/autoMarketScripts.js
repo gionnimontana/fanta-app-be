@@ -25,13 +25,26 @@ const getOfferAppetibilityIndex = (richplayer) => {
     if (active_offer) return 0
     const { price } = active_offer
     if (price > 1.5 * custom_fvm) return 1
+    if (price < custom_fvm / 2) return 0
+    const offerAppetibilityIndex = price / custom_fvm - 0.5
     return offerAppetibilityIndex
 }
 
-const evaluateIncomingPlayerOffer = (richplayer, mp) => {
-    let accepted = false
-    const offerAppetibilityIndex = getOfferAppetibilityIndex(richplayer)
+const sellImpactIndex = (richplayer, mp) => {
+    const sameRolePlayers = mp.teamPlayers[richplayer.role]
+    const averageCustomFvm = sameRolePlayers.reduce((sum, p) => sum + p.custom_fvm, 0) / sameRolePlayers.length
+    const averageCustomAfterSellFvm = (sum - richplayer.custom_fvm) / (sameRolePlayers.length - 1)
+    const sellImpactIndex = averageCustomFvm / averageCustomAfterSellFvm
+}
 
+const evaluateIncomingPlayerOffer = (richplayer, mp) => {
+    const offerAppetibilityIndex = getOfferAppetibilityIndex(richplayer)
+    if (offerAppetibilityIndex > 0.8) return true
+    const sellImpactIndex = getSellImpactIndex(richplayer, mp)
+    const sellNeed = mp[richplayer.role].length > 0
+    if (offerAppetibilityIndex >= 0.5) {
+
+    }
     return accepted
 }
 
@@ -120,16 +133,21 @@ const sellPlayers = async (sellActions) => {
 }
 
 const evalueateStartersNeeded = (richPlayers) => {
+    const si = 80
     let startersNeed = {
         p: 0,
         d: 0,
         c: 0,
         a: 0
     }
-    if (starterP.length < 2) startersNeed.p = 2 - richPlayers.p.length
-    if (starterD.length < 4) startersNeed.d = 4 - richPlayers.d.length
-    if (starterC.length < 4) startersNeed.c = 4 - richPlayers.c.length
-    if (starterA.length < 3) startersNeed.a = 3 - richPlayers.a.length
+    const starterP = richPlayers.p.filter(p => p.starter_index > si)
+    const starterD = richPlayers.d.filter(p => p.starter_index > si)
+    const starterC = richPlayers.c.filter(p => p.starter_index > si)
+    const starterA = richPlayers.a.filter(p => p.starter_index > si)
+    if (starterP.length < 2) startersNeed.p = 2 - starterP.length
+    if (starterD.length < 4) startersNeed.d = 4 - starterD.length
+    if (starterC.length < 4) startersNeed.c = 4 - starterC.length
+    if (starterA.length < 3) startersNeed.a = 3 - starterA.length
     return startersNeed
 }
 
@@ -166,7 +184,7 @@ const getMarketParams = (team, richPlayers) => {
     const startersNeed = evalueateStartersNeeded(teamPlayers)
     const sellNeed = evalueateSellNeeded(teamPlayers)
     const buyNeed = evalueateBuyNeeded(teamPlayers)
-    return {startersNeed, sellNeed, buyNeed, team}
+    return {startersNeed, sellNeed, buyNeed, team, teamPlayers}
 }
 
 const getTeamPlayers = (richPlayers) => {
