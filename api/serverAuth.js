@@ -38,14 +38,19 @@ const safeServerResponse = (res, data) => {
   try {
     if (res.statusCode > 300) return
     res.send(JSON.stringify({data, ok: true }))
-  } catch (e) {}
+    return
+  } catch (e) {
+    return
+  }
 }
 
 const safeFunctionCaller = async (res, func) => {
   try {
     await func()
+    return
   } catch (e) {
     res.status(400).send(e.message)
+    return
   }
 }
 
