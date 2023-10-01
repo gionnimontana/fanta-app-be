@@ -71,12 +71,17 @@ const calculateFormVotes = (form, votesMap, rolesMap) => {
             const currentOccupiedRoles = Object.keys(votes).map(id => votesMap[id] && rolesMap[id])
             const addableRoles = getAddableRole(currentOccupiedRoles, role)
             if (addableRoles.length > 0) {
-                const target = benchers[addableRoles[0]][0] || benchers[addableRoles[1]][0]
-                if (target) {
-                    const targetRole = rolesMap[target]
-                    benchers[targetRole].shift()
-                    votes[target] = votesMap[target]
-                    subCount++
+                const firstRole = addableRoles[0]
+                const secondRole = addableRoles[1]
+                const targetB = benchers[firstRole] || benchers[secondRole]
+                if (targetB && targetB.length > 0) {
+                    const target = targetB[0]
+                    if (target) {
+                        const targetRole = rolesMap[target]
+                        benchers[targetRole].shift()
+                        votes[target] = votesMap[target]
+                        subCount++
+                    }
                 }
             }
         }
