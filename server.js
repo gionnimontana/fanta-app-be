@@ -15,6 +15,14 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true}))
 app.listen(port, () => { console.log(`Fantabot editing endpoint listening on port ${port}`)})
 
+app.use((err, req, res, next) => {
+  console.log(err.stack)
+  console.error(err.stack)
+  console.log('@@@@@req:', req)
+  console.log('@@@@@res:', res)
+  next(err)
+})
+
 app.patch('/update_match_formation', async (req, res) => {
   const { teamId }  = await sa.getAuthenticatedSquad(req, res)
   await sa.sfc(res, () => formationScript.singleByTeamAndDay(teamId, req?.body?.day, req?.body?.formation))
