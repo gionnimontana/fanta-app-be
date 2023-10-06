@@ -25,42 +25,49 @@ app.use((err, req, res, next) => {
 
 app.patch('/update_match_formation', async (req, res) => {
   const { teamId }  = await sa.getAuthenticatedSquad(req, res)
+  if (!teamId) return
   await sa.sfc(res, () => formationScript.singleByTeamAndDay(teamId, req?.body?.day, req?.body?.formation))
   sa.safeServerResponse(res, 'formation updated')
 })
 
 app.patch('/update_team_autoformation', async (req, res) => {
   const { teamId }  = await sa.getAuthenticatedSquad(req, res)
+  if (!teamId) return
   await sa.sfc(res, () => aRC.updateTeamAutoFormation(teamId, req?.body?.auto_formation))
   sa.safeServerResponse(res, 'team auto formation updated')
 })
 
 app.post('/purchase_offer', async (req, res) => {
   const { teamId, leagueId }  = await sa.getAuthenticatedSquad(req, res)
+  if (!teamId) return
   await sa.sfc(res, () => purchaseScript.createPurchaseOffer(leagueId, teamId, req?.body?.player, req?.body?.price, req?.body?.max_price))
   sa.safeServerResponse(res, 'purchase offer created')
 })
 
 app.post('/delete_purchase_offer', async (req, res) => {
   const { teamId }  = await sa.getAuthenticatedSquad(req, res)
+  if (!teamId) return
   await sa.sfc(res, () => purchaseScript.deletePurchaseOffer(req?.body?.purchase_id, teamId))
   sa.safeServerResponse(res, 'purchase offer deleted')
 })
 
 app.patch('/purchase_offer', async (req, res) => {
   const { teamId }  = await sa.getAuthenticatedSquad(req, res)
+  if (!teamId) return
   await sa.sfc(res, () => purchaseScript.updatePurchaseOffer(teamId, req?.body?.purchase_id, req?.body?.price, req?.body?.max_price))
   sa.safeServerResponse(res, 'purchase offer updated')
 })
 
 app.post('/accept_purchase_offer', async (req, res) => {
   const { teamId }  = await sa.getAuthenticatedSquad(req, res)
+  if (!teamId) return
   await sa.sfc(res, () => purchaseScript.acceptPurchaseOffer(req?.body?.purchase_id, teamId))
   sa.safeServerResponse(res, 'purchase offer accepted')
 })
 
 app.post('/release_player', async (req, res) => {
   const { teamId, leagueId }  = await sa.getAuthenticatedSquad(req, res)
+  if (!teamId) return
   await sa.sfc(res, () => purchaseScript.releasePlayer(leagueId, teamId, req?.body?.player))
   sa.safeServerResponse(res, 'purchase offer accepted')
 })
