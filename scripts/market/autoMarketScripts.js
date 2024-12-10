@@ -7,12 +7,27 @@ const starterIndex = 80
 // startersNeed example: { 'p': 1, 'd': 1, 'c': 1, 'a': 1 }
 // richPlayer example: { id: 1, fvm: 100, starterIndex: 80, role: 'p', custom_fvm: 105, owned: true, active_offer: null, current_fvm: 110 }
 
-const getCustomSortedPurchaseListPerRole = (role, richPlayers, startersNeed) => {
-    const players = richPlayers[role]
-    let snp = startersNeed[role]
-    if (snp > 0) players.filter(p => p.starter_index >= starterIndex)
-    const sortedPlayers = players.sort((a, b) => a.custom_fvm + b.custom_fvm)
-    return sortedPlayers
+const getPlayersToBuyPerRole = (richPlayers, neededPlayers, startersNeed, budget) => {
+    const freePlayers = richPlayers.filter(p => p.fanta_team === undefined && p.active_offer === undefined)
+    const sortedPlayers = freePlayers.sort((a, b) => b.custom_fvm - a.custom_fvm)
+    const playersToBuy = []
+    const budgetPerPlayer = budget / neededPlayers
+    for (const p of sortedPlayers) {
+        if (neededPlayers === 0) break
+        if (p.starterIndex >= starterIndex) {
+            if (startersNeed > 0 && p.current_fvm <= budgetPerPlayer) {
+                playersToBuy.push(p)
+                neededPlayers--
+                startersNeed--
+                budget -= p.current_fvm
+            }
+        } else if (p.current_fvm <= budgetPerPlayer){
+            playersToBuy.push(p)
+            neededPlayers--
+            budget -= p.current_fvm
+        }
+    }
+    return playersToBuy
 }
 
 const getCustomSortedPlayerToSellPerRole = (role, mp) => {
@@ -23,13 +38,13 @@ const getCustomSortedPlayerToSellPerRole = (role, mp) => {
 
 const getTeamPlayersWithOffer = (richPlayers) => {
     const allRolePlayers = [...richPlayers.p, ...richPlayers.d, ...richPlayers.c, ...richPlayers.a]
-    const teamPlayersWithOffer = allRolePlayers.filter(p => p.owned === true && p.active_offer !== null)
+    const teamPlayersWithOffer = allRolePlayers.filter(p => p.owned === true && p.active_offer !== undefined)
     return teamPlayersWithOffer
 }
 
 const getOfferAppetibilityIndex = (richplayer) => {
     const { custom_fvm, active_offer } = richplayer
-    if (active_offer) return 0
+    if (!active_offer) return 0
     const { price } = active_offer
     if (price > 1.5 * custom_fvm) return 1
     if (price < custom_fvm / 2) return 0
@@ -53,7 +68,7 @@ const evaluateIncomingPlayerOffer = (richplayer, mp) => {
     const offerAppetibilityIndex = getOfferAppetibilityIndex(richplayer)
     if (offerAppetibilityIndex > 0.8) return true
     const sellImpactIndex = getSellImpactIndex(richplayer, mp)
-    const sellNeed = mp[richplayer.role].length > 0
+    const sellNeed = mp.sellNeed[richplayer.role].length > 0
     if (offerAppetibilityIndex >= 0.5) {
         if (sellNeed && sellImpactIndex > 0.5) return true
     }
@@ -70,7 +85,7 @@ const getOffersActions = (richPlayers, mp) => {
     }
     for (const p of teamPlayersWithOffer) {
         const accepted = evaluateIncomingPlayerOffer(p, mp)
-        offerActions.list.push({id: purchaseId, accepted})
+        offerActions.list.push({id: p.id, accepted})
         if (accepted) offerActions.rosterChanges = true
     }
     return offerActions
@@ -98,6 +113,14 @@ const getSellActions = (mp) => {
     return sellActions
 }
 
+const calculateBudgetPerRole = (role, mp) => {
+    const totalPurchase = Object.values(mp.buyNeed).reduce((sum, p) => sum + p, 0)
+    const rolePurchase = mp.buyNeed[role]
+    const budget = mp.team.credits
+    const budgetPerRole = Math.floor(budget * rolePurchase / totalPurchase)
+    return budgetPerRole
+}
+
 const getBuyActions = (richPlayers, mp) => {
     const {buyNeed, startersNeed} = mp
     if (!buyNeed) return
@@ -109,12 +132,12 @@ const getBuyActions = (richPlayers, mp) => {
     for (const role in buyNeed) {
         const neededPlayers = buyNeed[role]
         if (neededPlayers > 0) {
-            const sortedPlayers = getCustomSortedPurchaseListPerRole(role, richPlayers, startersNeed)
-            const playersToBuy = sortedPlayers.slice(0, neededPlayers)
+            const budgetPerRole = calculateBudgetPerRole(role, mp)
+            const playersToBuy = getPlayersToBuyPerRole(richPlayers[role], neededPlayers, startersNeed[role], budgetPerRole)
             for (const player of playersToBuy) {
                 const price = player.current_fvm
                 const maxprice = Math.max(player.current_fvm, player.custom_fvm)
-                const fromsquad = null
+                const fromsquad = player.fanta_team
                 buyActions.list.push({playerID: player.id, fromsquad, price, maxprice})
             }
         }
@@ -211,24 +234,25 @@ const evalueateSellNeeded = (richPlayers) => {
 }
 
 const getMarketParams = (team, richPlayers) => {
-    const teamPlayers = getTeamPlayers(richPlayers)
+    const teamPlayers = getTeamPlayers(team, richPlayers)
     const startersNeed = evalueateStartersNeeded(teamPlayers)
     const sellNeed = evalueateSellNeeded(teamPlayers)
     const buyNeed = evalueateBuyNeeded(teamPlayers)
     return {startersNeed, sellNeed, buyNeed, team, teamPlayers}
 }
 
-const getTeamPlayers = (richPlayers) => {
+const getTeamPlayers = (team, richPlayers) => {
+    const isOwnedOrRequired = (p) => p.owned || p.active_offer?.to_team === team.id 
     const teamPlayers = {
-        p: richPlayers.p.filter(p => p.owned),
-        d: richPlayers.d.filter(p => p.owned),
-        c: richPlayers.c.filter(p => p.owned),
-        a: richPlayers.a.filter(p => p.owned)
+        p: richPlayers.p.filter(p => isOwnedOrRequired(p)),
+        d: richPlayers.d.filter(p => isOwnedOrRequired(p)),
+        c: richPlayers.c.filter(p => isOwnedOrRequired(p)),
+        a: richPlayers.a.filter(p => isOwnedOrRequired(p))
     }
     return teamPlayers
 }
 
-const getRichPlayers = (customFVM, teamRoaster, players, leaguePurchases) => {
+const getRichPlayers = (customFVM, playersTeamMap, players, leaguePurchases) => {
     const leaguePurchasesMapByPlayer = leaguePurchases.reduce((map, obj) => {
         map[obj.player] = obj
         return map
@@ -241,10 +265,11 @@ const getRichPlayers = (customFVM, teamRoaster, players, leaguePurchases) => {
     }
     for (const p of players) {
         const active_offer = leaguePurchasesMapByPlayer[p.id]
-        const owned = teamRoaster.find(tp => tp.player === p.id) ? true : false
+        const owned = Boolean(playersTeamMap[p.id]?.owned)
+        const fanta_team = playersTeamMap[p.id]?.team
         const custom_fvm = customFVM[p.id] ? customFVM[p.id].fvm : p.fvm
         const current_fvm = active_offer ? active_offer.price : p.fvm
-        playerRoleMap[p.role].push({ ...p, custom_fvm, owned, active_offer, current_fvm })
+        playerRoleMap[p.role].push({ ...p, custom_fvm, owned, fanta_team, active_offer, current_fvm })
     }
     return playerRoleMap
 }
@@ -257,11 +282,23 @@ const getTeamCustomFVM = (allPlayers) => {
     return customFVM
 }
 
-const runAutoMarket = async (team, allPlayers) => {
-    const teamRoaster = await aRC.getTeamPlayersByTeam(team.id)
+const getPlayersTeamMap = (teamId, teamPlayers) => {
+    const playersTeamMap = teamPlayers.reduce((map, obj) => {
+        map[obj.player] = {
+            team: obj.team, 
+            owned: obj.team === teamId ? true : false
+        }
+        return map
+    }, {})
+    return playersTeamMap
+
+}
+
+const runAutoMarket = async (team, teamPlayers, allPlayers) => {
+    const playersTeamMap = getPlayersTeamMap(team.id, teamPlayers)
     const leaguePurchases = await aRC.getAllOpenPurchasesByLeague(team.league)
     const customFVM = getTeamCustomFVM(allPlayers)
-    let richPlayers = getRichPlayers(customFVM,teamRoaster, allPlayers, leaguePurchases)
+    let richPlayers = getRichPlayers(customFVM, playersTeamMap, allPlayers, leaguePurchases)
     let mp = getMarketParams(team, richPlayers)
 
     const offersActions = getOffersActions(richPlayers, mp)
@@ -288,10 +325,11 @@ const runAutoMarket = async (team, allPlayers) => {
 const runAutoMarketManager = async () => {
     const teams = await aRC.getAllSquads()
     const allPlayers = await aRC.getAllPlayers(true)
+    const teamPlayers = await aRC.getTeamPlayersByLeague(devLeagueId)
     for (const t of teams) {
         if (t.auto_market) {
             try {
-                await runAutoMarket(t, allPlayers)
+                await runAutoMarket(t, teamPlayers, allPlayers)
             } catch (e) {
                 console.log('@@@CONDITIONAL-SCRIPT-ERROR@@@ - auto validatePurchase failded on team:' + t.id)
                 console.log(e)
@@ -316,10 +354,15 @@ const runAutoMarketOnDevLeague = async () => {
     const devLeagueId = '1bn2o4kzza0ufc1'
     const teams = await aRC.getAllSquadsByLeague(devLeagueId)
     const allPlayers = await aRC.getAllPlayers()
+    const teamPlayers = await aRC.getTeamPlayersByLeague(devLeagueId)
+    // const playersTeamMap = teamPlayers.reduce((map, obj) => {
+    //     map[obj.id] = obj.team
+    //     return map
+    // }, {})
     for (const t of teams) {
         if (t.auto_market) {
             try {
-                await runAutoMarket(t, allPlayers)
+                await runAutoMarket(t, teamPlayers, allPlayers)
             } catch (e) {
                 console.log('@@@CONDITIONAL-SCRIPT-ERROR@@@ - auto validatePurchase failded on team:' + t.id)
                 console.log(e)
